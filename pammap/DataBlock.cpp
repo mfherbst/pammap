@@ -31,28 +31,107 @@ size_t product(const std::vector<size_t>& shape) {
 }  // namespace
 
 template <typename T>
-DataBlock<T>::DataBlock(std::initializer_list<T> data_)
-      : std::vector<T>(data_),
-        shape{data_.size()},
-        memory_layout{MemoryLayout::RowMajor} {}
+DataBlock<T>::DataBlock(std::vector<T> data, std::vector<size_t> shape)
+      : m_data(nullptr),
+        m_size(data.size()),
+        m_shape(shape),
+        m_strides(shape.size(), 0),
+        m_ownership{Memory::OwnCopy} {
+  size_t acc = 1;
+  for (size_t i = 0; i < shape.size(); ++i) {
+    m_strides[i] = acc;
+    acc *= shape[i];
+  }
+  assert_size(acc, m_size);
 
-template <typename T>
-DataBlock<T>::DataBlock(std::vector<T> data_)
-      : DataBlock(data_, {data_.size()}, MemoryLayout::RowMajor) {}
-
-template <typename T>
-DataBlock<T>::DataBlock(std::vector<T> data_, std::vector<size_t> shape_,
-                        MemoryLayout memory_layout_)
-      : std::vector<T>(data_), shape(shape_), memory_layout(memory_layout_) {
-  assert_size(product(shape), this->size());
+  m_data = new T[m_size];
+  std::copy(data.begin(), data.end(), m_data);
 }
 
 template <typename T>
-DataBlock<T>::DataBlock(T* data_, std::vector<size_t> shape_, MemoryLayout memory_layout_)
-      : std::vector<T>(data_, data_ + product(shape_)),
-        shape(shape_),
-        memory_layout(memory_layout_) {}
+DataBlock<T>::DataBlock(T* data, std::vector<size_t> shape, Memory ownership)
+      : m_data(nullptr),
+        m_size(0),
+        m_shape(shape),
+        m_strides(shape.size(), 0),
+        m_ownership{ownership} {
+  size_t acc = 1;
+  for (size_t i = 0; i < shape.size(); ++i) {
+    m_strides[i] = acc;
+    acc *= shape[i];
+  }
+  m_size = acc;
+
+  if (m_ownership == Memory::ViewOnly) {
+    m_data = data;
+  } else {
+    m_data = new T[m_size];
+    std::copy(data, data + m_size, m_data);
+  }
+}
+
+template <typename T>
+DataBlock<T>::DataBlock(DataBlock&& other)
+      : m_data(other.m_data),
+        m_size(other.m_size),
+        m_shape(other.m_shape),
+        m_strides(other.m_strides),
+        m_ownership(other.m_ownership) {
+  other.m_data = nullptr;
+}
+
+template <typename T>
+DataBlock<T>& DataBlock<T>::operator=(DataBlock&& other) {
+  m_size       = other.m_size;
+  m_shape      = other.m_shape;
+  m_strides    = other.m_strides;
+  m_ownership  = other.m_ownership;
+  m_data       = other.m_data;
+  other.m_data = nullptr;
+
+  return *this;
+}
+
+template <typename T>
+DataBlock<T>::DataBlock(const DataBlock& other)
+      : m_data(nullptr),
+        m_size(other.m_size),
+        m_shape(other.m_shape),
+        m_strides(other.m_strides),
+        m_ownership(other.m_ownership) {
+  if (m_ownership == Memory::ViewOnly) {
+    m_data = other.m_data;
+  } else {
+    m_data = new T[m_size];
+    std::copy(other.begin(), other.end(), m_data);
+  }
+}
+
+template <typename T>
+DataBlock<T>& DataBlock<T>::operator=(const DataBlock& other) {
+  if (m_ownership != Memory::ViewOnly) {
+    delete[] m_data;
+  }
+
+  m_size      = other.m_size;
+  m_shape     = other.m_shape;
+  m_strides   = other.m_strides;
+  m_ownership = other.m_ownership;
+
+  if (m_ownership == Memory::ViewOnly) {
+    m_data = other.m_data;
+  } else {
+    m_data = new T[m_size];
+    std::copy(other.begin(), other.end(), m_data);
+  }
+  return *this;
+}
 
 // TODO explicit instantiation
+template class DataBlock<double>;
+template class DataBlock<float>;
+template class DataBlock<int>;
+template class DataBlock<size_t>;
+template class DataBlock<std::string>;
 
 }  // namespace pammap

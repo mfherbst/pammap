@@ -24,14 +24,27 @@ namespace pammap {
 namespace test {
 
 int main() {
-  PamMap map{{"a/b/c", 0}, {"cde", 4}, {"d/ou/ble", 2}};
+  PamMap map{
+        {"a/b/c", 0},
+        {"cde", 4},
+        {"d/ou/ble", 2},
+        {"test/list", {1, 2, 3}},
+  };
+
+  PamMap test = map.submap("test");
+  test.update("list2", DataBlock<int>{1, 2, 3});
 
   for (auto& kv : map) {
-    std::cout << kv.key() << " " << kv.type_name() << " = " << kv.value<int>()
-              << std::endl;
+    if (kv.key() == "/test/list" || kv.key() == "/test/list2") {
+      std::cout << kv.key() << " " << kv.type_name() << " = "
+                << kv.value<DataBlock<int>>().size() << std::endl;
+    } else {
+      std::cout << kv.key() << " " << kv.type_name() << " = " << kv.value<int>()
+                << std::endl;
+    }
   }
 
-  auto sub = map.submap("a/b");
+  PamMap sub = map.submap("a/b");
   return sub.at<int>("c");
 }
 

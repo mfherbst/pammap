@@ -36,11 +36,14 @@ class PamMapValue : public any {
 
   /** \brief Make an PamMapValue out of a vector */
   template <typename T>
-  PamMapValue(const std::vector<T>& v) : PamMapValue(DataBlock(v)) {
+  PamMapValue(const std::vector<T>&) : PamMapValue() {
     static_assert(true,
                   "Cannot assign a list/array of values as a std::vector. "
                   "Use the low-level DataBlock<T> object for this.");
   }
+
+  template <typename T>
+  PamMapValue(const std::initializer_list<T> il) : PamMapValue(DataBlock(il)) {}
 
   /** Return the demangled typename of the type of the internal object. */
   std::string type_name() const { return demangle(any::type()); }
