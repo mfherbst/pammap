@@ -19,19 +19,4 @@
 ##
 ## ---------------------------------------------------------------------
 
-# C++ sourle files in the repository
-set(PAMMAP_SOURCES
-	DataBlock.cpp
-	demangle.cpp
-	PamMap.cpp
-)
-
-# Build the C++ library
-include_directories("${PROJECT_SOURCE_DIR}")
-add_library(pammap ${PAMMAP_SOURCES})
-set_target_properties(pammap PROPERTIES VERSION "${PROJECT_VERSION}")
-
-
-
-# TODO Dependency for now.
-target_link_libraries(pammap PUBLIC krims)
+add_subdirectory(core)

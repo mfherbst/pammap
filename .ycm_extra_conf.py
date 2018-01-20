@@ -67,7 +67,7 @@ def BuildBaseFlags():
     # warnings within them
     # To suppress errors shown here, use "-isystem"
     # instead of "-I"
-    '-I', '.',
+    '-I', './pammap/core',
     '-isystem', './build/tests',
     '-isystem', './krims/src',
     '-isystem', FindStdInclude(),

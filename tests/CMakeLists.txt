@@ -7,7 +7,7 @@ file(DOWNLOAD
 )
 
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-include_directories("${PROJECT_SOURCE_DIR}")
+include_directories("${PROJECT_SOURCE_DIR}/pammap/core")
 add_executable(test_library
 	test.cpp
 	main.cpp

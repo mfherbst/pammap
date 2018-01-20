@@ -25,6 +25,13 @@ cmake_policy(VERSION 3.0.0)
 # Prefer shared to static libs (cmake does the reverse by default)
 option(BUILD_SHARED_LIBS "Build shared libraries instead of static ones" ON)
 
+# We need even static library code to be position independent
+# as most modules are compiled and integrated with 3rd party
+# interpreters as shared modules
+if (NOT BUILD_SHARED_LIBS)
+	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
 ##########################################################################
 # Project setup
 

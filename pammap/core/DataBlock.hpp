@@ -98,6 +98,9 @@ class DataBlock {
   const_iterator cend() const { return m_data + m_size; }
   //@}
 
+  // TODO overload
+  // T operator[]
+
   /** Total size of the data */
   size_t size() const { return m_size; }
 

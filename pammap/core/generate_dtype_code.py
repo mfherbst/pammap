@@ -71,17 +71,23 @@ NAMESPACE_CLOSE = [
 
 
 def to_cpp_type(dtype):
+    """Convert the dtype to the C++ name used for it"""
     return dtype[0].upper() + dtype[1:]
 
 
 def generate_typedefs(dtypes):
+    """
+    Generate the typedefs, which map the C++ names
+    for the types to the underlying C++ types.
+    """
+
     output = licence_header_cpp()
     for hdr in constants.cpp.headers:
         output.append("#include " + hdr)
 
     output += [
         "",
-        "// Generate typedefs for easier use of mapping types on C++ side.",
+        "// Typedefs mapping the dtype names to their underlying C++ types",
         ""
     ]
 
@@ -89,7 +95,6 @@ def generate_typedefs(dtypes):
     for dtype in dtypes:
         underlying_type = constants.cpp.underlying_type[dtype]
         output += ["typedef " + underlying_type + " " + to_cpp_type(dtype) + ";"]
-
     output += NAMESPACE_CLOSE
     return "\n".join(output)
 
@@ -107,6 +112,9 @@ def generate_data_block_instantiation(dtypes):
 
 
 def generate_is_supported_type(dtypes):
+    # TODO Instead of this, explicitly generate
+    #      the code making an EntryValue object.
+
     output = licence_header_cpp()
     output += ["#include <type_traits>"]
     output += ["#include \"typedefs.hxx\""]
@@ -119,7 +127,7 @@ def generate_is_supported_type(dtypes):
         "",
     ]
 
-    supported_types = [to_cpp_type(dtype) for dtype in constants.cpp.dtype_map]
+    supported_types = [to_cpp_type(dtype) for dtype in constants.cpp.underlying_type]
     supported_types += [
         "DataBlock<" + cpptype + ">" for cpptype in supported_types
     ]
@@ -135,20 +143,56 @@ def generate_is_supported_type(dtypes):
     return "\n".join(output)
 
 
+def generate_pammap_interface(dtypes):
+    output = licence_header_cpp()
+    output += [
+        "#pragma once",
+        "#ifndef SWIG",
+        "#include \"PamMap.hpp\"",
+        "#endif",
+    ]
+    output += NAMESPACE_OPEN
+    output += ["struct PamMapInterface : public PamMap {"]
+
+    for dtype in dtypes:
+        if dtype != "integer": continue
+        cpptype = to_cpp_type(dtype)
+
+        # Dump the function definition to update an internal value
+        output += [
+            "void update_" + dtype + "(std::string key, " + cpptype + " value) {",
+            "  this->update(key, value);",
+            "}"
+        ]
+
+        # Dump the function definition to retrieve a value
+        output += [
+            cpptype + " get_" + dtype + "(std::string key) {",
+            "  return this->at<" + cpptype + ">(key);",
+            "}"
+        ]
+
+    output += ["};"]
+    output += NAMESPACE_CLOSE
+    return "\n".join(output)
+
+
 def main():
     if "-h" in sys.argv or "--help" in sys.argv:
-        print("Generate type-specific cxx files in the project.")
+        print("Generate type-specific cxx and hxx files of the project.")
         raise SystemExit()
-
-    with open("DataBlock.instantiation.hxx", "w") as f:
-        f.write(generate_data_block_instantiation(constants.DTYPES))
-
-    with open("IsSupportedType.hxx", "w") as f:
-        f.write(generate_is_supported_type(constants.DTYPES))
 
     with open("typedefs.hxx", "w") as f:
         f.write(generate_typedefs(constants.DTYPES))
 
+    with open("IsSupportedType.hxx", "w") as f:
+        f.write(generate_is_supported_type(constants.DTYPES))
+
+    with open("DataBlock.instantiation.hxx", "w") as f:
+        f.write(generate_data_block_instantiation(constants.DTYPES))
+
+    with open("PamMapInterface.hxx", "w") as f:
+        f.write(generate_pammap_interface(constants.DTYPES))
 
 if __name__ == "__main__":
     main()

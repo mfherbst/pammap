@@ -32,6 +32,8 @@ class PamMapValue : public any {
  public:
   PamMapValue() = default;
 
+  // TODO Have it explicit?
+
   template <typename ValueType,
             typename = typename std::enable_if<IsSupportedType<ValueType>::value>::type>
   PamMapValue(ValueType&& value) : any(std::forward<ValueType>(value)) {
@@ -59,6 +61,9 @@ class PamMapValue : public any {
                   "Unsigned integer types are not supported with a PamMap. Use a signed "
                   "integer type instead.");
   }
+
+  /** Explicit instantiation of integer */
+  PamMapValue(Integer i) : any(i) {}
 
   /** \brief Make a PamMapValue out of an initialiser list */
   template <typename T>

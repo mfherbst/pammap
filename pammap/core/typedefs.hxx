@@ -27,7 +27,7 @@
 #include <string>
 #include <cstdint>
 
-// Generate typedefs for easier use of mapping types on C++ side.
+// Typedefs mapping the dtype names to their underlying C++ types
 
 
 namespace pammap {

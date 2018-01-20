@@ -22,6 +22,8 @@
 
 namespace pammap {
 
+// TODO This code needs proper refactoring
+
 namespace {
 size_t product(const std::vector<size_t>& shape) {
   size_t acc = 1;

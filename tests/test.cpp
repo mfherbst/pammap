@@ -17,9 +17,9 @@
 // along with pammap. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include "pammap.hpp"
 #include <catch.hpp>
 #include <iostream>
-#include <pammap/pammap.hpp>
 
 namespace pammap {
 namespace test {
