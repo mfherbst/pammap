@@ -20,6 +20,7 @@
 #pragma once
 #include <array>
 #include <initializer_list>
+#include <memory>
 #include <vector>
 
 namespace pammap {
@@ -105,6 +106,10 @@ class DataBlock {
 
   /** Shape of the data */
   std::vector<size_t> shape() const { return m_shape; }
+
+  /** Release the contained pointer.
+   *  The caller will be responsible for destruction */
+  std::unique_ptr<T[]> release();
 
  private:
   /** The pointer to the actual data */

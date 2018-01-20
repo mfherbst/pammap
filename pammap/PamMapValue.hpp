@@ -19,8 +19,10 @@
 
 #pragma once
 #include "DataBlock.hpp"
+#include "IsSupportedType.hxx"
 #include "any.hpp"
 #include "demangle.hpp"
+#include "typedefs.hxx"
 
 namespace pammap {
 
@@ -28,7 +30,14 @@ namespace pammap {
  *  key string actually points to. Essentially a slightly specialised pammap::any*/
 class PamMapValue : public any {
  public:
-  using any::any;
+  PamMapValue() = default;
+
+  template <typename ValueType,
+            typename = typename std::enable_if<IsSupportedType<ValueType>::value>::type>
+  PamMapValue(ValueType&& value) : any(std::forward<ValueType>(value)) {
+    static_assert(IsSupportedType<ValueType>::value,
+                  "This value type is not supported by PamMap.");
+  }
 
   /** \brief Make an PamMapValue out of a const char*.
    * This behaves like the equivalent GenMapValue of a  std::string */
@@ -36,17 +45,41 @@ class PamMapValue : public any {
 
   /** \brief Make an PamMapValue out of a vector */
   template <typename T>
-  PamMapValue(const std::vector<T>&) : PamMapValue() {
+  PamMapValue(std::vector<T>) : PamMapValue() {
     static_assert(true,
                   "Cannot assign a list/array of values as a std::vector. "
                   "Use the low-level DataBlock<T> object for this.");
   }
 
+  /** \brief Make an PamMapValue out of an unsigned integer type */
+  template <typename T,
+            typename = typename std::enable_if<std::is_unsigned<T>::value>::type>
+  PamMapValue(T) : PamMapValue() {
+    static_assert(true,
+                  "Unsigned integer types are not supported with a PamMap. Use a signed "
+                  "integer type instead.");
+  }
+
+  /** \brief Make a PamMapValue out of an initialiser list */
   template <typename T>
   PamMapValue(const std::initializer_list<T> il) : PamMapValue(DataBlock(il)) {}
 
   /** Return the demangled typename of the type of the internal object. */
   std::string type_name() const { return demangle(any::type()); }
+
+  //
+  // Special treatment of the default integer type int
+  // Such that simple assignments just work.
+  //
+  /** \brief Make an PamMapValue out of an int */
+  PamMapValue(int i) : PamMapValue(static_cast<Integer>(i)) {}
+
+  /** \brief Make a PamMapValue out of an initialiser list of int */
+  PamMapValue(std::initializer_list<int> il)
+        : PamMapValue(DataBlock<Integer>(std::vector<Integer>(il.size()))) {
+    auto& data = any_cast<DataBlock<Integer>&>(*this);
+    std::copy(il.begin(), il.end(), data.begin());
+  }
 };
 
 // TODO Custom any_cast, which catches the std::bad_any_cast

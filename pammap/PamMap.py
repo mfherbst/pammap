@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+## vi: tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 ## ---------------------------------------------------------------------
 ##
 ## Copyright (C) 2018 by Michael F. Herbst and contributors
@@ -19,19 +21,13 @@
 ##
 ## ---------------------------------------------------------------------
 
-# C++ sourle files in the repository
-set(PAMMAP_SOURCES
-	DataBlock.cpp
-	demangle.cpp
-	PamMap.cpp
-)
-
-# Build the C++ library
-include_directories("${PROJECT_SOURCE_DIR}")
-add_library(pammap ${PAMMAP_SOURCES})
-set_target_properties(pammap PROPERTIES VERSION "${PROJECT_VERSION}")
+class PamMap:
+    # Class which works like a dict and mimics the
+    # tree-like structure
+    pass # like the ScfParameters object of molsturm
 
 
-
-# TODO Dependency for now.
-target_link_libraries(pammap PUBLIC krims)
+def python2cpp(m):
+    # Construct a C++ object, which is a *view* to the python PamMap.
+    # This step should also perform some type conversions (e.g. int -> np.uint64)
+    # if required

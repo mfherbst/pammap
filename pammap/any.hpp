@@ -21,7 +21,11 @@
 #include <any>
 
 namespace pammap {
-using std::any;
+
+struct any : public std::any {
+  using std::any::any;
+};
+
 using std::any_cast;
 using std::bad_any_cast;
 

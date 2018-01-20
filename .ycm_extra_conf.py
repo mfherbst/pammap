@@ -63,11 +63,12 @@ def BuildBaseFlags():
     '-std=c++17',
     # Treat .h header files as c++:
     '-x', 'c++',
-    # Include other libraries and show errors and 
+    # Include other libraries and show errors and
     # warnings within them
-    # To suppress errors shown here, use "-isystem" 
+    # To suppress errors shown here, use "-isystem"
     # instead of "-I"
     '-I', '.',
+    '-isystem', './build/tests',
     '-isystem', './krims/src',
     '-isystem', FindStdInclude(),
   ]

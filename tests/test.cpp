@@ -17,13 +17,14 @@
 // along with pammap. If not, see <http://www.gnu.org/licenses/>.
 //
 
+#include <catch.hpp>
 #include <iostream>
 #include <pammap/pammap.hpp>
 
 namespace pammap {
 namespace test {
 
-int main() {
+TEST_CASE("Dummy test") {
   PamMap map{
         {"a/b/c", 0},
         {"cde", 4},
@@ -32,23 +33,21 @@ int main() {
   };
 
   PamMap test = map.submap("test");
-  test.update("list2", DataBlock<int>{1, 2, 3});
+  test.update("list2", DataBlock<Integer>{1, 2, 3});
 
   for (auto& kv : map) {
     if (kv.key() == "/test/list" || kv.key() == "/test/list2") {
       std::cout << kv.key() << " " << kv.type_name() << " = "
-                << kv.value<DataBlock<int>>().size() << std::endl;
+                << kv.value<DataBlock<Integer>>().size() << std::endl;
     } else {
-      std::cout << kv.key() << " " << kv.type_name() << " = " << kv.value<int>()
+      std::cout << kv.key() << " " << kv.type_name() << " = " << kv.value<Integer>()
                 << std::endl;
     }
   }
 
   PamMap sub = map.submap("a/b");
-  return sub.at<int>("c");
+  REQUIRE(sub.at<Integer>("c") == 0);
 }
 
 }  // namespace test
 }  // namespace pammap
-
-int main() { return pammap::test::main(); }

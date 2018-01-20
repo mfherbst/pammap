@@ -127,11 +127,15 @@ DataBlock<T>& DataBlock<T>::operator=(const DataBlock& other) {
   return *this;
 }
 
-// TODO explicit instantiation
-template class DataBlock<double>;
-template class DataBlock<float>;
-template class DataBlock<int>;
-template class DataBlock<size_t>;
-template class DataBlock<std::string>;
+template <typename T>
+std::unique_ptr<T[]> DataBlock<T>::release() {
+  assert_throw(m_ownership == Memory::OwnCopy,
+               krims::ExcInvalidState("Can only release memory if I am the owner."));
+  return std::unique_ptr<T[]>(m_data);
+  m_data      = nullptr;
+  m_ownership = Memory::ViewOnly;
+}
 
 }  // namespace pammap
+
+#include "DataBlock.instantiation.hxx"

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+## vi: tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 ## ---------------------------------------------------------------------
 ##
 ## Copyright (C) 2018 by Michael F. Herbst and contributors
@@ -19,19 +21,35 @@
 ##
 ## ---------------------------------------------------------------------
 
-# C++ sourle files in the repository
-set(PAMMAP_SOURCES
-	DataBlock.cpp
-	demangle.cpp
-	PamMap.cpp
-)
-
-# Build the C++ library
-include_directories("${PROJECT_SOURCE_DIR}")
-add_library(pammap ${PAMMAP_SOURCES})
-set_target_properties(pammap PROPERTIES VERSION "${PROJECT_VERSION}")
+# The conceptual data types we support
+DTYPES = [
+    "complex",
+    "integer",
+    "float",
+    "string"
+]
 
 
+class cpp:
+    """Constants for C++"""
 
-# TODO Dependency for now.
-target_link_libraries(pammap PUBLIC krims)
+    # Headers which are needed for representing the dtypes
+    headers = ["<complex>", "<string>", "<cstdint>"]
+
+    # How the conceptual dtypes are represented on C++
+    underlying_type = {
+        "integer": "int64_t",
+        "float": "double",
+        "complex": "std::complex<double>",
+        "string": "std::string"
+    }
+
+
+class python:
+    # How the conceptual dtypes are represented in python
+    underlying_type = {
+        "integer": "int",
+        "double": "float",
+        "complex": "complex",
+        "string": "str",
+    }
