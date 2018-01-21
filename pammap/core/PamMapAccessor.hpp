@@ -18,7 +18,7 @@
 //
 
 #pragma once
-#include "PamMapValue.hpp"
+#include "PamMapValue.hxx"
 #include <string>
 
 namespace pammap {

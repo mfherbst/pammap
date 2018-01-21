@@ -46,10 +46,17 @@ class cpp:
 
 
 class python:
-    # How the conceptual dtypes are represented in python
+    # How the conceptual dtypes are represented in plain python
     underlying_type = {
         "integer": "int",
-        "double": "float",
+        "float": "float",
         "complex": "complex",
         "string": "str",
+    }
+
+    # How the conceptual dtypes are represented in numpy
+    underlying_numpy_type = {
+        "integer": "NPY_LONGLONG",
+        "float": "NPY_DOUBLE",
+        "complex": "NPY_CDOUBLE",
     }

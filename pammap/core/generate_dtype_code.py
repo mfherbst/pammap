@@ -27,8 +27,29 @@ import sys
 import constants
 
 
+def clean_block(blocktext):
+    """
+    Strip exactly for whitespaces and leading and trailling newlines
+
+    Returns:
+        list of lines
+    """
+    ret = []
+    for line in blocktext.split("\n"):
+        if line[:4] == "    ":
+            ret.append(line[4:].rstrip())
+        else:
+            ret.append(line.rstrip())
+    if ret[0] == "":
+        ret = ret[1:]
+    if ret[-1] == "":
+        ret = ret[:-1]
+    return ret
+
+
 def licence_header_cpp():
-    ret = """//
+    ret = """
+    //
     // Copyright (C) {0:} by Michael F. Herbst and contributors
     //
     // This file is part of pammap.
@@ -53,7 +74,7 @@ def licence_header_cpp():
     // Instead edit the script and rerun it.
     //
     """.format(date.today().year, os.path.basename(__file__))
-    return [s.strip() for s in ret.split("\n")]
+    return clean_block(ret)
 
 
 NAMESPACE_OPEN = [
@@ -73,6 +94,25 @@ NAMESPACE_CLOSE = [
 def to_cpp_type(dtype):
     """Convert the dtype to the C++ name used for it"""
     return dtype[0].upper() + dtype[1:]
+
+
+def to_cpp_blocktype(dtype, full=True):
+    if full:
+        return "pammap::DataBlock<pammap::" + to_cpp_type(dtype) + ">"
+    else:
+        return "DataBlock<" + to_cpp_type(dtype) + ">"
+
+
+def make_supported_cpp_types(dtypes):
+    """Convert the dtypes to cpp_types using to_cpp_type
+       and also build derived types like DataBlock<ccptype>
+       and return the full lot as a list.
+    """
+    supported_types = [to_cpp_type(dtype) for dtype in constants.cpp.underlying_type]
+    supported_types += [
+        "DataBlock<" + cpptype + ">" for cpptype in supported_types
+    ]
+    return supported_types
 
 
 def generate_typedefs(dtypes):
@@ -112,9 +152,6 @@ def generate_data_block_instantiation(dtypes):
 
 
 def generate_is_supported_type(dtypes):
-    # TODO Instead of this, explicitly generate
-    #      the code making an EntryValue object.
-
     output = licence_header_cpp()
     output += ["#include <type_traits>"]
     output += ["#include \"typedefs.hxx\""]
@@ -127,11 +164,7 @@ def generate_is_supported_type(dtypes):
         "",
     ]
 
-    supported_types = [to_cpp_type(dtype) for dtype in constants.cpp.underlying_type]
-    supported_types += [
-        "DataBlock<" + cpptype + ">" for cpptype in supported_types
-    ]
-    for cpptype in supported_types:
+    for cpptype in make_supported_cpp_types(dtypes):
         output += [
             "/** Specialisation of IsSupportedType<T> for " + cpptype + ".*/",
             "template<>",
@@ -143,37 +176,178 @@ def generate_is_supported_type(dtypes):
     return "\n".join(output)
 
 
-def generate_pammap_interface(dtypes):
+def generate_pammap_value(dtypes):
     output = licence_header_cpp()
     output += [
-        "#pragma once",
-        "#ifndef SWIG",
+        r"#pragma once",
+        r'#include "DataBlock.hpp"',
+        r'#include "IsSupportedType.hxx"',
+        r'#include "any.hpp"',
+        r'#include "typedefs.hxx"',
+    ]
+    output += NAMESPACE_OPEN
+
+    # Add class header
+    output += clean_block(r"""
+    /** \brief Class to contain an entry value in a PamMap.
+        Essentially a slightly specialised pammap::any */
+    class PamMapValue : public any {
+     public:
+    """)
+
+    # Add fallback constructors
+    output += clean_block(r"""
+      PamMapValue() = default;
+
+      /** Catch-all constructor, which defaults to an error */
+      template <typename ValueType>
+      PamMapValue(ValueType) : PamMapValue() {
+        static_assert(!std::is_unsigned<ValueType>::value,
+                      "Unsigned integer types are not supported with PamMap. "
+                      "Use a signed type instead.");
+
+        static_assert(IsSupportedType<ValueType>::value,
+                      "This value type is not supported by PamMap.");
+      }
+
+      /** Catch-all constructor for std::vector */
+      template <typename ValueType>
+      PamMapValue(std::vector<ValueType>) : PamMapValue() {
+        static_assert(IsSupportedType<ValueType>::value,
+                      "Cannot assign a list/array of values as a std::vector "
+                      "with PamMap. Use the low-level DataBlock<T> for this purpose.");
+      }
+    """)
+    output.append("")
+
+    # Auto-generate constructors
+    for cpptype in make_supported_cpp_types(dtypes):
+        output += [
+            "  /** Construction from " + cpptype + " */",
+            "  PamMapValue(" + cpptype + " val) : any(std::move(val)) {}",
+            ""
+        ]
+
+    # Add transforming constructors
+    output += clean_block(r"""
+      /** \brief Make a PamMapValue out of an initialiser list by conversion to
+                 a DataBlock of the appropriate type. */
+      template <typename T>
+      PamMapValue(const std::initializer_list<T> il) : PamMapValue(DataBlock(il)) {
+        static_assert(IsSupportedType<DataBlock<T>>::value,
+                      "The chosen type is not supported for list elements with PamMap.");
+      }
+
+      //
+      // The int type gets special treatment because it is the default for raw
+      // numbers, such that simple things like PamMapValue{1,2,3} just work.
+      //
+      /** \brief Make an PamMapValue out of an int. Behaves like a PamMapValue
+        *        containing an INTEGER type */
+      PamMapValue(int i) : PamMapValue(static_cast<Integer>(i)) {}
+
+      /** \brief Make a PamMapValue out of an initialiser list of int */
+      PamMapValue(std::initializer_list<int> il)
+            : PamMapValue(DataBlock<Integer>(il.begin(), il.end())) {}
+
+      //
+      // Same for const char*
+      //
+      /** \brief Make an PamMapValue out of a const char*.
+        * This behaves like the equivalent GenMapValue of a  std::string */
+      PamMapValue(const char* s) : PamMapValue(std::string(s)) {}
+    """)
+    output.append("")
+
+    # Add type_name() method
+    output += clean_block(r"""
+      /** Return the demangled typename of the type of the internal object. */
+      std::string type_name() const;
+    """)
+
+    # Close class and namespace
+    output += ["};"]
+    output += NAMESPACE_CLOSE
+    return "\n".join(output)
+
+
+def generate_pammap_interface(dtypes):
+    output = licence_header_cpp()
+    output += ["#pragma once"]
+
+    output += [
+        r'#ifdef SWIG',
+        r'#include "typedefs.hxx"',
+    ]
+    for dtype in dtypes:
+        if dtype not in constants.python.underlying_numpy_type:
+            continue
+        dbtype = to_cpp_blocktype(dtype)
+        output += ["%apply (" + dbtype + " DATAVIEW) {(" + dbtype + ")}"]
+    output += [
+        "#else",
         "#include \"PamMap.hpp\"",
         "#endif",
     ]
+
     output += NAMESPACE_OPEN
     output += ["struct PamMapInterface : public PamMap {"]
 
     for dtype in dtypes:
-        if dtype != "integer": continue
         cpptype = to_cpp_type(dtype)
 
         # Dump the function definition to update an internal value
         output += [
             "void update_" + dtype + "(std::string key, " + cpptype + " value) {",
-            "  this->update(key, value);",
-            "}"
+            "  this->update(key, std::move(value));",
+            "}\n"
         ]
 
         # Dump the function definition to retrieve a value
         output += [
             cpptype + " get_" + dtype + "(std::string key) {",
             "  return this->at<" + cpptype + ">(key);",
+            "}\n"
+        ]
+
+    for dtype in dtypes:
+        if dtype not in constants.python.underlying_numpy_type:
+            continue
+
+        # Function to update the value in the PamMap
+        dbtype_full = to_cpp_blocktype(dtype)
+        dbtype = to_cpp_blocktype(dtype, full=False)
+        output += [
+            "void update_datablock_" + dtype + "(std::string key, " +
+            dbtype_full + " value) {",
+            "  this->update(key, std::move(value));",
+            "}"
+        ]
+
+        # Function to retrieve the value in the PamMap
+        output += [
+            dbtype_full + " get_datablock_" + dtype + "(std::string key) {",
+            "  return this->at<" + dbtype + ">(key);"
             "}"
         ]
 
     output += ["};"]
     output += NAMESPACE_CLOSE
+    return "\n".join(output)
+
+
+def generate_data_block_i(dtypes):
+    with open("templates/DataBlock.i.template") as f:
+        output = f.readlines()
+
+    output += [""]
+    for dtype in dtypes:
+        if dtype not in constants.python.underlying_numpy_type:
+            continue
+        nptype = constants.python.underlying_numpy_type[dtype]
+        output += [
+            "%datablock_typemaps(" + to_cpp_blocktype(dtype) + ", " + nptype + ")"
+        ]
     return "\n".join(output)
 
 
@@ -191,8 +365,15 @@ def main():
     with open("DataBlock.instantiation.hxx", "w") as f:
         f.write(generate_data_block_instantiation(constants.DTYPES))
 
+    with open("PamMapValue.hxx", "w") as f:
+        f.write(generate_pammap_value(constants.DTYPES))
+
     with open("PamMapInterface.hxx", "w") as f:
         f.write(generate_pammap_interface(constants.DTYPES))
+
+    with open("DataBlock.i", "w") as f:
+        f.write(generate_data_block_i(constants.DTYPES))
+
 
 if __name__ == "__main__":
     main()

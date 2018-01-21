@@ -22,7 +22,6 @@
 // generate_dtype_code.py
 // Instead edit the script and rerun it.
 //
-
 #include <type_traits>
 #include "typedefs.hxx"
 

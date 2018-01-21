@@ -26,6 +26,7 @@
 # C++ sourle files in the repository
 set(PAMMAP_SOURCES
 	DataBlock.cpp
+	PamMapValue.cpp
 	demangle.cpp
 	PamMap.cpp
 )
@@ -76,7 +77,7 @@ set_source_files_properties(
 	${swig_generated_file_fullname}
 	PROPERTIES
 	COMPILE_FLAGS
-	"-Wno-sign-conversion -Wno-missing-field-initializers -Wno-pedantic -Wno-old-style-cast -Wno-sign-compare -Wno-maybe-uninitialized -Wno-deprecated -Wno-error"
+	"-Wno-sign-conversion -Wno-conversion -Wno-missing-field-initializers -Wno-pedantic -Wno-old-style-cast -Wno-sign-compare -Wno-maybe-uninitialized -Wno-deprecated -Wno-error"
 )
 target_include_directories(
 	${SWIG_MODULE_${MODULE_NAME}_REAL_NAME}

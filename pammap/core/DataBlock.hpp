@@ -24,21 +24,29 @@
 #include <vector>
 
 namespace pammap {
+enum class Memory {
+  /** View the data only, i.e. do not deallocate it later */
+  ViewOnly,
+
+  /** Copy the data into internal storage. Delete it when done */
+  OwnCopy,
+};
 
 /** Simple low-level class to store a block of data */
 template <typename T>
 class DataBlock {
  public:
-  enum class Memory {
-    /** View the data only, i.e. do not deallocate it later */
-    ViewOnly,
-
-    /** Copy the data into internal storage. Delete it when done */
-    OwnCopy,
-  };
-
+  typedef T value_type;
   typedef T* iterator;
   typedef const T* const_iterator;
+
+  /** Construct an empty object, which is unusable */
+  DataBlock()
+        : m_data(nullptr),
+          m_size(0),
+          m_shape(0),
+          m_strides(1),
+          m_ownership(Memory::OwnCopy) {}
 
   /** Initialise from iterator range as 1d array */
   template <typename Input>
@@ -97,9 +105,6 @@ class DataBlock {
   const_iterator end() const { return m_data + m_size; }
   const_iterator cend() const { return m_data + m_size; }
   //@}
-
-  // TODO overload
-  // T operator[]
 
   /** Total size of the data */
   size_t size() const { return m_size; }

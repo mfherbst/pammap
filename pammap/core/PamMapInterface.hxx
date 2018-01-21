@@ -22,21 +22,66 @@
 // generate_dtype_code.py
 // Instead edit the script and rerun it.
 //
-
 #pragma once
-#ifndef SWIG
+#ifdef SWIG
+#include "typedefs.hxx"
+%apply (pammap::DataBlock<pammap::Complex> DATAVIEW) {(pammap::DataBlock<pammap::Complex>)}
+%apply (pammap::DataBlock<pammap::Integer> DATAVIEW) {(pammap::DataBlock<pammap::Integer>)}
+%apply (pammap::DataBlock<pammap::Float> DATAVIEW) {(pammap::DataBlock<pammap::Float>)}
+#else
 #include "PamMap.hpp"
 #endif
 
 namespace pammap {
 
 struct PamMapInterface : public PamMap {
-void update_integer(std::string key, Integer value) {
-  this->update(key, value);
+void update_complex(std::string key, Complex value) {
+  this->update(key, std::move(value));
 }
+
+Complex get_complex(std::string key) {
+  return this->at<Complex>(key);
+}
+
+void update_integer(std::string key, Integer value) {
+  this->update(key, std::move(value));
+}
+
 Integer get_integer(std::string key) {
   return this->at<Integer>(key);
 }
+
+void update_float(std::string key, Float value) {
+  this->update(key, std::move(value));
+}
+
+Float get_float(std::string key) {
+  return this->at<Float>(key);
+}
+
+void update_string(std::string key, String value) {
+  this->update(key, std::move(value));
+}
+
+String get_string(std::string key) {
+  return this->at<String>(key);
+}
+
+void update_datablock_complex(std::string key, pammap::DataBlock<pammap::Complex> value) {
+  this->update(key, std::move(value));
+}
+pammap::DataBlock<pammap::Complex> get_datablock_complex(std::string key) {
+  return this->at<DataBlock<Complex>>(key);}
+void update_datablock_integer(std::string key, pammap::DataBlock<pammap::Integer> value) {
+  this->update(key, std::move(value));
+}
+pammap::DataBlock<pammap::Integer> get_datablock_integer(std::string key) {
+  return this->at<DataBlock<Integer>>(key);}
+void update_datablock_float(std::string key, pammap::DataBlock<pammap::Float> value) {
+  this->update(key, std::move(value));
+}
+pammap::DataBlock<pammap::Float> get_datablock_float(std::string key) {
+  return this->at<DataBlock<Float>>(key);}
 };
 
 } // namespace pammap
