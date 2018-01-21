@@ -64,8 +64,3 @@
 // files instead.
 // In the full version the instantiation typemaps will be added here.
 //
-
-%datablock_typemaps(pammap::DataBlock<pammap::Integer>, NPY_LONGLONG)
-%datablock_typemaps(pammap::DataBlock<pammap::Complex>, NPY_CDOUBLE)
-%datablock_typemaps(pammap::DataBlock<pammap::Float>, NPY_DOUBLE)
-

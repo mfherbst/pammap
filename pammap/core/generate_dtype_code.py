@@ -338,9 +338,9 @@ def generate_pammap_interface(dtypes):
 
 def generate_data_block_i(dtypes):
     with open("templates/DataBlock.i.template") as f:
-        output = f.readlines()
+        original = f.readlines()
 
-    output += [""]
+    output = [""]
     for dtype in dtypes:
         if dtype not in constants.python.underlying_numpy_type:
             continue
@@ -348,7 +348,7 @@ def generate_data_block_i(dtypes):
         output += [
             "%datablock_typemaps(" + to_cpp_blocktype(dtype) + ", " + nptype + ")"
         ]
-    return "\n".join(output)
+    return "".join(original) + "\n".join(output)
 
 
 def main():
