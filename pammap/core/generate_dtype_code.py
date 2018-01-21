@@ -321,14 +321,16 @@ def generate_pammap_interface(dtypes):
             "void update_datablock_" + dtype + "(std::string key, " +
             dbtype_full + " value) {",
             "  this->update(key, std::move(value));",
-            "}"
+            "}",
+            ""
         ]
 
         # Function to retrieve the value in the PamMap
         output += [
             dbtype_full + " get_datablock_" + dtype + "(std::string key) {",
             "  return this->at<" + dbtype + ">(key);"
-            "}"
+            "}",
+            ""
         ]
 
     output += ["};"]
