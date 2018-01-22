@@ -283,7 +283,7 @@ def generate_pammap_interface(dtypes):
         if dtype not in constants.python.underlying_numpy_type:
             continue
         dbtype = to_cpp_blocktype(dtype)
-        output += ["%apply (" + dbtype + " DATAVIEW) {(" + dbtype + ")}"]
+        output += ["%apply (" + dbtype + " DATAVIEW) {(" + dbtype + " view)}"]
     output += [
         "#else",
         "#include \"PamMap.hpp\"",
@@ -314,13 +314,33 @@ def generate_pammap_interface(dtypes):
         if dtype not in constants.python.underlying_numpy_type:
             continue
 
-        # Function to update the value in the PamMap
+        # Function to update the value in the PamMap by placing a view to numpy data
         dbtype_full = to_cpp_blocktype(dtype)
         dbtype = to_cpp_blocktype(dtype, full=False)
         output += [
-            "void update_datablock_" + dtype + "(std::string key, " +
-            dbtype_full + " value) {",
-            "  this->update(key, std::move(value));",
+            "/** Update the value of the PamMap behind the given key,",
+            "  * placing a view to the passed " + dbtype + " data inside it.",
+            "  * The passed object and the stored object point to the same memory.",
+            "  * The caller needs to make sure that the memory is not deallocated",
+            "  * as long as it could be in use by the PamMap. */",
+            "void update_datablock_" + dtype + "_view(std::string key, " +
+            dbtype_full + " view) {",
+            "  this->update(key, std::move(view));",
+            "}",
+            ""
+        ]
+
+        # Function to update the value in the PamMap by placing a copy to numpy data
+        output += [
+            "/** Update the value of the PamMap behind the given key,",
+            "  * placing a copy of the passed " + dbtype + " value inside it.",
+            "  * The passed object and the stored object point to independent data",
+            "  * after the call */",
+            "void update_datablock_" + dtype + "_copy(std::string key, " +
+            dbtype_full + " view) {",
+            "  // Make a copy of the view including the memory",
+            "  " + dbtype + " copy(view, Memory::OwnCopy);",
+            "  this->update(key, std::move(copy));",
             "}",
             ""
         ]

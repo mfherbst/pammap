@@ -130,6 +130,21 @@ DataBlock<T>& DataBlock<T>::operator=(const DataBlock& other) {
 }
 
 template <typename T>
+DataBlock<T>::DataBlock(const DataBlock& other, Memory ownership)
+      : m_data(nullptr),
+        m_size(other.m_size),
+        m_shape(other.m_shape),
+        m_strides(other.m_strides),
+        m_ownership(ownership) {
+  if (m_ownership == Memory::ViewOnly) {
+    m_data = other.m_data;
+  } else {
+    m_data = new T[m_size];
+    std::copy(other.begin(), other.end(), m_data);
+  }
+}
+
+template <typename T>
 std::unique_ptr<T[]> DataBlock<T>::release() {
   assert_throw(m_ownership == Memory::OwnCopy,
                krims::ExcInvalidState("Can only release memory if I am the owner."));

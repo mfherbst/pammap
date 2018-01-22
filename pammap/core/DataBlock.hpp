@@ -80,6 +80,14 @@ class DataBlock {
   DataBlock(const DataBlock& other);
   DataBlock& operator=(const DataBlock&);
 
+  /** Copy the data from another DataBlock.
+   *
+   * \param ownership  If ViewOnly, this object is only a view
+   *                   if OwnCopy, this object will have its own
+   *                   copy of the data
+   */
+  DataBlock(const DataBlock& other, Memory ownership);
+
   ~DataBlock() {
     if (m_ownership == Memory::OwnCopy) {
       delete[] m_data;

@@ -25,9 +25,9 @@
 #pragma once
 #ifdef SWIG
 #include "typedefs.hxx"
-%apply (pammap::DataBlock<pammap::Complex> DATAVIEW) {(pammap::DataBlock<pammap::Complex>)}
-%apply (pammap::DataBlock<pammap::Integer> DATAVIEW) {(pammap::DataBlock<pammap::Integer>)}
-%apply (pammap::DataBlock<pammap::Float> DATAVIEW) {(pammap::DataBlock<pammap::Float>)}
+%apply (pammap::DataBlock<pammap::Complex> DATAVIEW) {(pammap::DataBlock<pammap::Complex> view)}
+%apply (pammap::DataBlock<pammap::Integer> DATAVIEW) {(pammap::DataBlock<pammap::Integer> view)}
+%apply (pammap::DataBlock<pammap::Float> DATAVIEW) {(pammap::DataBlock<pammap::Float> view)}
 #else
 #include "PamMap.hpp"
 #endif
@@ -67,21 +67,72 @@ String get_string(std::string key) {
   return this->at<String>(key);
 }
 
-void update_datablock_complex(std::string key, pammap::DataBlock<pammap::Complex> value) {
-  this->update(key, std::move(value));
+/** Update the value of the PamMap behind the given key,
+  * placing a view to the passed DataBlock<Complex> data inside it.
+  * The passed object and the stored object point to the same memory.
+  * The caller needs to make sure that the memory is not deallocated
+  * as long as it could be in use by the PamMap. */
+void update_datablock_complex_view(std::string key, pammap::DataBlock<pammap::Complex> view) {
+  this->update(key, std::move(view));
 }
+
+/** Update the value of the PamMap behind the given key,
+  * placing a copy of the passed DataBlock<Complex> value inside it.
+  * The passed object and the stored object point to independent data
+  * after the call */
+void update_datablock_complex_copy(std::string key, pammap::DataBlock<pammap::Complex> view) {
+  // Make a copy of the view including the memory
+  DataBlock<Complex> copy(view, Memory::OwnCopy);
+  this->update(key, std::move(copy));
+}
+
 pammap::DataBlock<pammap::Complex> get_datablock_complex(std::string key) {
   return this->at<DataBlock<Complex>>(key);}
-void update_datablock_integer(std::string key, pammap::DataBlock<pammap::Integer> value) {
-  this->update(key, std::move(value));
+
+/** Update the value of the PamMap behind the given key,
+  * placing a view to the passed DataBlock<Integer> data inside it.
+  * The passed object and the stored object point to the same memory.
+  * The caller needs to make sure that the memory is not deallocated
+  * as long as it could be in use by the PamMap. */
+void update_datablock_integer_view(std::string key, pammap::DataBlock<pammap::Integer> view) {
+  this->update(key, std::move(view));
 }
+
+/** Update the value of the PamMap behind the given key,
+  * placing a copy of the passed DataBlock<Integer> value inside it.
+  * The passed object and the stored object point to independent data
+  * after the call */
+void update_datablock_integer_copy(std::string key, pammap::DataBlock<pammap::Integer> view) {
+  // Make a copy of the view including the memory
+  DataBlock<Integer> copy(view, Memory::OwnCopy);
+  this->update(key, std::move(copy));
+}
+
 pammap::DataBlock<pammap::Integer> get_datablock_integer(std::string key) {
   return this->at<DataBlock<Integer>>(key);}
-void update_datablock_float(std::string key, pammap::DataBlock<pammap::Float> value) {
-  this->update(key, std::move(value));
+
+/** Update the value of the PamMap behind the given key,
+  * placing a view to the passed DataBlock<Float> data inside it.
+  * The passed object and the stored object point to the same memory.
+  * The caller needs to make sure that the memory is not deallocated
+  * as long as it could be in use by the PamMap. */
+void update_datablock_float_view(std::string key, pammap::DataBlock<pammap::Float> view) {
+  this->update(key, std::move(view));
 }
+
+/** Update the value of the PamMap behind the given key,
+  * placing a copy of the passed DataBlock<Float> value inside it.
+  * The passed object and the stored object point to independent data
+  * after the call */
+void update_datablock_float_copy(std::string key, pammap::DataBlock<pammap::Float> view) {
+  // Make a copy of the view including the memory
+  DataBlock<Float> copy(view, Memory::OwnCopy);
+  this->update(key, std::move(copy));
+}
+
 pammap::DataBlock<pammap::Float> get_datablock_float(std::string key) {
   return this->at<DataBlock<Float>>(key);}
+
 };
 
 } // namespace pammap
