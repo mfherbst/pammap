@@ -72,6 +72,26 @@ PamMap::PamMap(const PamMap& other) : PamMap() {
   }
 }
 
+template <typename T>
+T& PamMap::at(const std::string& key, T& default_value) {
+  auto itkey = m_container_ptr->find(make_full_key(key));
+  if (itkey == std::end(*m_container_ptr)) {
+    return default_value;
+  } else {
+    return any_cast<T&>(itkey->second);
+  }
+}
+
+template <typename T>
+const T& PamMap::at(const std::string& key, const T& default_value) const {
+  auto itkey = m_container_ptr->find(make_full_key(key));
+  if (itkey == std::end(*m_container_ptr)) {
+    return default_value;
+  } else {
+    return any_cast<const T&>(itkey->second);
+  }
+}
+
 void PamMap::update(std::initializer_list<entry_type> il) {
   // Make each key a full path key and append/modify entry in map
   for (entry_type t : il) {
@@ -183,3 +203,5 @@ typename PamMap::const_iterator PamMap::cend(const std::string& path) const {
 }
 
 }  // namespace pammap
+
+#include "PamMap.instantiation.hxx"

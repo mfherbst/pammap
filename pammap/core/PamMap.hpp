@@ -38,6 +38,11 @@ namespace pammap {
  */
 class PamMap {
  public:
+#ifdef SWIG
+  // Swig only sees the constructor, nothing else of this class
+  PamMap();
+
+#else
   typedef typename PamMapIterator<true>::map_type map_type;
   typedef std::pair<const std::string, PamMapValue> entry_type;
   typedef PamMapIterator<true> const_iterator;
@@ -52,11 +57,11 @@ class PamMap {
    * Constructs empty map */
   PamMap() : m_container_ptr{std::make_shared<map_type>()}, m_location{""} {}
 
-  /** \brief Construct parameter map from initialiser list of entry_types */
-  PamMap(std::initializer_list<entry_type> il) : PamMap{} { update(il); };
-
   ~PamMap()        = default;
   PamMap(PamMap&&) = default;
+
+  /** \brief Construct parameter map from initialiser list of entry_types */
+  PamMap(std::initializer_list<entry_type> il) : PamMap{} { update(il); };
 
   /** \brief Copy constructor
    *
@@ -441,30 +446,6 @@ class PamMap {
    * may not end with a slash (but a full key like "/tree"
    */
   std::string m_location;
+#endif  // SWIG not defined
 };
-
-//
-// -----------------------------------------------------------------
-//
-
-template <typename T>
-T& PamMap::at(const std::string& key, T& default_value) {
-  auto itkey = m_container_ptr->find(make_full_key(key));
-  if (itkey == std::end(*m_container_ptr)) {
-    return default_value;
-  } else {
-    return any_cast<T&>(itkey->second);
-  }
-}
-
-template <typename T>
-const T& PamMap::at(const std::string& key, const T& default_value) const {
-  auto itkey = m_container_ptr->find(make_full_key(key));
-  if (itkey == std::end(*m_container_ptr)) {
-    return default_value;
-  } else {
-    return any_cast<const T&>(itkey->second);
-  }
-}
-
 }  // namespace pammap

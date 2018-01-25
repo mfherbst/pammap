@@ -1,3 +1,4 @@
+// vi: syntax=c
 //
 // Copyright (C) 2018 by Michael F. Herbst and contributors
 //
@@ -17,8 +18,18 @@
 // along with pammap. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#pragma once
-#include "DataBlock.hpp"
+%{
 #include "PamMap.hpp"
-#include "any.hpp"
-#include "typedefs.hxx"
+%}
+
+%include "DataBlock.i"
+%include "std_string.i"
+%include "stdint.i"
+%include "typedefs.hxx"
+%include "PamMap.hpp"
+
+//
+// Do not use the bare *.i.template file, use the generated DataBlock.i
+// files instead.
+// In the full version the instantiation typemaps will be added here.
+//

@@ -91,16 +91,19 @@ NAMESPACE_CLOSE = [
 ]
 
 
-def to_cpp_type(dtype):
+def to_cpp_type(dtype, full=False):
     """Convert the dtype to the C++ name used for it"""
-    return dtype[0].upper() + dtype[1:]
-
-
-def to_cpp_blocktype(dtype, full=True):
     if full:
-        return "pammap::DataBlock<pammap::" + to_cpp_type(dtype) + ">"
+        return "pammap::" + dtype[0].upper() + dtype[1:]
     else:
-        return "DataBlock<" + to_cpp_type(dtype) + ">"
+        return dtype[0].upper() + dtype[1:]
+
+
+def to_cpp_blocktype(dtype, full=False):
+    if full:
+        return "pammap::DataBlock<" + to_cpp_type(dtype, full=True) + ">"
+    else:
+        return "DataBlock<" + to_cpp_type(dtype, full=False) + ">"
 
 
 def make_supported_cpp_types(dtypes):
@@ -146,6 +149,22 @@ def generate_data_block_instantiation(dtypes):
     output += NAMESPACE_OPEN
     for dtype in dtypes:
         output.append("template class DataBlock<{0:}>;".format(to_cpp_type(dtype)))
+    output += NAMESPACE_CLOSE
+
+    return "\n".join(output)
+
+
+def generate_pammap_instantiation(dtypes):
+    output = licence_header_cpp()
+    output += ["#include \"typedefs.hxx\""]
+
+    output += NAMESPACE_OPEN
+    for dtype in dtypes:
+        output.append("template const {0:}& PamMap::at<{0:}>("
+                      "const std::string& key, const {0:}& default_value) "
+                      "const;".format(to_cpp_type(dtype)))
+        output.append("template {0:}& PamMap::at<{0:}>(const std::string& key, "
+                      "{0:}& default_value);".format(to_cpp_type(dtype)))
     output += NAMESPACE_CLOSE
 
     return "\n".join(output)
@@ -271,93 +290,6 @@ def generate_pammap_value(dtypes):
     return "\n".join(output)
 
 
-def generate_pammap_interface(dtypes):
-    output = licence_header_cpp()
-    output += ["#pragma once"]
-
-    output += [
-        r'#ifdef SWIG',
-        r'#include "typedefs.hxx"',
-    ]
-    for dtype in dtypes:
-        if dtype not in constants.python.underlying_numpy_type:
-            continue
-        dbtype = to_cpp_blocktype(dtype)
-        output += ["%apply (" + dbtype + " DATAVIEW) {(" + dbtype + " view)}"]
-    output += [
-        "#else",
-        "#include \"PamMap.hpp\"",
-        "#endif",
-    ]
-
-    output += NAMESPACE_OPEN
-    output += ["struct PamMapInterface : public PamMap {"]
-
-    for dtype in dtypes:
-        cpptype = to_cpp_type(dtype)
-
-        # Dump the function definition to update an internal value
-        output += [
-            "void update_" + dtype + "(std::string key, " + cpptype + " value) {",
-            "  this->update(key, std::move(value));",
-            "}\n"
-        ]
-
-        # Dump the function definition to retrieve a value
-        output += [
-            cpptype + " get_" + dtype + "(std::string key) {",
-            "  return this->at<" + cpptype + ">(key);",
-            "}\n"
-        ]
-
-    for dtype in dtypes:
-        if dtype not in constants.python.underlying_numpy_type:
-            continue
-
-        # Function to update the value in the PamMap by placing a view to numpy data
-        dbtype_full = to_cpp_blocktype(dtype)
-        dbtype = to_cpp_blocktype(dtype, full=False)
-        output += [
-            "/** Update the value of the PamMap behind the given key,",
-            "  * placing a view to the passed " + dbtype + " data inside it.",
-            "  * The passed object and the stored object point to the same memory.",
-            "  * The caller needs to make sure that the memory is not deallocated",
-            "  * as long as it could be in use by the PamMap. */",
-            "void update_datablock_" + dtype + "_view(std::string key, " +
-            dbtype_full + " view) {",
-            "  this->update(key, std::move(view));",
-            "}",
-            ""
-        ]
-
-        # Function to update the value in the PamMap by placing a copy to numpy data
-        output += [
-            "/** Update the value of the PamMap behind the given key,",
-            "  * placing a copy of the passed " + dbtype + " value inside it.",
-            "  * The passed object and the stored object point to independent data",
-            "  * after the call */",
-            "void update_datablock_" + dtype + "_copy(std::string key, " +
-            dbtype_full + " view) {",
-            "  // Make a copy of the view including the memory",
-            "  " + dbtype + " copy(view, Memory::OwnCopy);",
-            "  this->update(key, std::move(copy));",
-            "}",
-            ""
-        ]
-
-        # Function to retrieve the value in the PamMap
-        output += [
-            dbtype_full + " get_datablock_" + dtype + "(std::string key) {",
-            "  return this->at<" + dbtype + ">(key);"
-            "}",
-            ""
-        ]
-
-    output += ["};"]
-    output += NAMESPACE_CLOSE
-    return "\n".join(output)
-
-
 def generate_data_block_i(dtypes):
     with open("templates/DataBlock.i.template") as f:
         original = f.readlines()
@@ -368,8 +300,72 @@ def generate_data_block_i(dtypes):
             continue
         nptype = constants.python.underlying_numpy_type[dtype]
         output += [
-            "%datablock_typemaps(" + to_cpp_blocktype(dtype) + ", " + nptype + ")"
+            "%datablock_typemaps(" + to_cpp_blocktype(dtype, full=True) +
+            ", " + nptype + ")"
         ]
+    return "".join(original) + "\n".join(output)
+
+
+def generate_pammap_i(dtypes):
+    with open("templates/PamMap.i.template") as f:
+        original = f.readlines()
+
+    output = [""]
+    for dtype in dtypes:
+        if dtype not in constants.python.underlying_numpy_type:
+            continue
+        dbtype = to_cpp_blocktype(dtype, full=True)
+        output += ["%apply (" + dbtype + " DATAVIEW) {(" + dbtype + ")}"]
+
+    output += [
+        "",
+        "%extend pammap::PamMap {"
+    ]
+    for dtype in dtypes:
+        cpptype = to_cpp_type(dtype, full=True)
+        output += [
+            "  void update_integer(std::string key, " + cpptype + " value) {",
+            "    $self->update(key, std::move(value));",
+            "  }",
+            "  " + cpptype + " get_integer(std::string key) {",
+            "    return $self->at<" + cpptype + ">(key);",
+            "  }",
+            ""
+        ]
+
+    for dtype in dtypes:
+        if dtype not in constants.python.underlying_numpy_type:
+            continue
+        dbtype = to_cpp_blocktype(dtype, full=True)
+        # Function to update the value in the PamMap by viewing the data
+        output += [
+            "void update_datablock_" + dtype + "_view(std::string key, " +
+            dbtype + " view) {",
+            "  $self->update(key, std::move(view));",
+            "}",
+            ""
+        ]
+
+        # Function to update the value in the PamMap by placing a copy to numpy data
+        output += [
+            "void update_datablock_" + dtype + "_copy(std::string key, " +
+            dbtype + " view) {",
+            "  // Make a copy of the view including the memory",
+            "  " + dbtype + " copy(view, pammap::Memory::OwnCopy);",
+            "  $self->update(key, std::move(copy));",
+            "}",
+            ""
+        ]
+
+        # Function to retrieve the value in the PamMap (as a copy)
+        output += [
+            dbtype + " get_datablock_" + dtype + "_copy(std::string key) {",
+            "  return $self->at<" + dbtype + ">(key);"
+            "}",
+            ""
+        ]
+
+    output += ["}"]
     return "".join(original) + "\n".join(output)
 
 
@@ -387,14 +383,17 @@ def main():
     with open("DataBlock.instantiation.hxx", "w") as f:
         f.write(generate_data_block_instantiation(constants.DTYPES))
 
+    with open("PamMap.instantiation.hxx", "w") as f:
+        f.write(generate_pammap_instantiation(constants.DTYPES))
+
     with open("PamMapValue.hxx", "w") as f:
         f.write(generate_pammap_value(constants.DTYPES))
 
-    with open("PamMapInterface.hxx", "w") as f:
-        f.write(generate_pammap_interface(constants.DTYPES))
-
     with open("DataBlock.i", "w") as f:
         f.write(generate_data_block_i(constants.DTYPES))
+
+    with open("PamMap.i", "w") as f:
+        f.write(generate_pammap_i(constants.DTYPES))
 
 
 if __name__ == "__main__":
