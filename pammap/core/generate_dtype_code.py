@@ -307,18 +307,32 @@ def generate_data_block_i(dtypes):
 
 
 def generate_pammap_i(dtypes):
-    with open("templates/PamMap.i.template") as f:
-        original = f.readlines()
+    output = ["// vi: syntax=c"]
+    output += licence_header_cpp()
+    output += [
+        "",
+        "%{",
+        '#include "PamMap.hpp"',
+        "%}",
+        "",
+        '%include "DataBlock.i"',
+        '%include "std_string.i"',
+        '%include "stdint.i"',
+        '%include "typedefs.hxx"',
+    ]
 
-    output = [""]
+    output += [
+        "",
+    ]
     for dtype in dtypes:
         if dtype not in constants.python.underlying_numpy_type:
             continue
         dbtype = to_cpp_blocktype(dtype, full=True)
-        output += ["%apply (" + dbtype + " DATAVIEW) {(" + dbtype + ")}"]
+        output += ["%apply (" + dbtype + " DATAVIEW) {(" + dbtype + " view)}"]
 
     output += [
         "",
+        '%include "PamMap.hpp"',
         "%extend pammap::PamMap {"
     ]
     for dtype in dtypes:
@@ -327,7 +341,7 @@ def generate_pammap_i(dtypes):
             "  void update_integer(std::string key, " + cpptype + " value) {",
             "    $self->update(key, std::move(value));",
             "  }",
-            "  " + cpptype + " get_integer(std::string key) {",
+            "  " + cpptype + " get_" + dtype + "(std::string key) {",
             "    return $self->at<" + cpptype + ">(key);",
             "  }",
             ""
@@ -366,7 +380,7 @@ def generate_pammap_i(dtypes):
         ]
 
     output += ["}"]
-    return "".join(original) + "\n".join(output)
+    return "\n".join(output)
 
 
 def main():
