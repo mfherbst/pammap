@@ -61,7 +61,12 @@ link_directories("${KRIMS_DIR}/build/src/krims")
 # Pass on to subdirectories
 add_subdirectory(pammap)
 
-option(PAMMAP_ENABLE_TESTS "Enable tesing of pammap" ON)
+option(PAMMAP_ENABLE_EXAMPLES "Enable building pammap examples" ON)
+if(PAMMAP_ENABLE_EXAMPLES)
+	add_subdirectory(examples)
+endif()
+
+option(PAMMAP_ENABLE_TESTS "Enable testing of pammap" ON)
 if(PAMMAP_ENABLE_TESTS)
 	enable_testing()
 	add_subdirectory(tests)

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+## vi: tabstop=4 shiftwidth=4 softtabstop=4 expandtab
 ## ---------------------------------------------------------------------
 ##
 ## Copyright (C) 2018 by Michael F. Herbst and contributors
@@ -19,18 +21,13 @@
 ##
 ## ---------------------------------------------------------------------
 
-file(DOWNLOAD
-	https://github.com/catchorg/Catch2/releases/download/v1.12.0/catch.hpp
-	${CMAKE_CURRENT_BINARY_DIR}/catch.hpp
-	EXPECTED_HASH
-	SHA256=505cb08da48a91eec41c3c1591d04d18776c8522b0d1e9e50c4133daa820c903
-)
+import testmodule
+import numpy as np
 
-include_directories("${CMAKE_CURRENT_BINARY_DIR}")
-include_directories("${PROJECT_SOURCE_DIR}/pammap/core")
-add_executable(test_library
-	test.cpp
-	main.cpp
-)
-target_link_libraries(test_library pammap)
-add_test(NAME "Test pammap C++ library" COMMAND test_library)
+a = np.array([1, 2, 5])
+
+pmap = testmodule.PamMap()
+pmap.update_integer("/integer", 4)
+pmap.update_datablock_integer_view("/array", a)
+
+testmodule.print_keys(pmap)
