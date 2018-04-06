@@ -28,6 +28,7 @@
 #include "PamMap.hpp"
 %}
 
+%include "pammap_exceptions.i"
 %include "DataBlock.i"
 %include "std_string.i"
 %include "stdint.i"

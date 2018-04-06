@@ -33,17 +33,17 @@ AssertionError::AssertionError(pammap_error_constructor_args)
                     "This is a bug and should not have happened. Please report it to the "
                     "developers along with details how you got this message.") {}
 
-ValueError::ValueError(pammap_error_constructor_args, std::string description)
-      : PamMapError(pammap_error_constructor_vars, std::move(description)) {}
-
-InvalidStateError::InvalidStateError(pammap_error_constructor_args,
-                                     std::string description)
-      : PamMapError(pammap_error_constructor_vars, std::move(description)) {}
-
 KeyError::KeyError(pammap_error_constructor_args, std::string key_)
       : PamMapError(pammap_error_constructor_vars, "Unknown key: " + key_), key(key_) {}
 
-#undef pammap_error_constructor_vars
-#undef pammap_error_constructor_args
+#define define_description_error(name)                               \
+  name::name(pammap_error_constructor_args, std::string description) \
+        : PamMapError(pammap_error_constructor_vars, std::move(description)) {}
+
+/* clang-format off */
+define_description_error(ValueError)
+define_description_error(InvalidStateError)
+define_description_error(NotImplementedError)
+/* clang-format on */
 
 }  // namespace pammap

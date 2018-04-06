@@ -24,13 +24,13 @@ namespace pammap {
 
 PamMapError::PamMapError(const char* name_, const char* file_, int line_,
                          const char* function_, const char* failed_condition_,
-                         std::string extra)
+                         std::string extra_)
       : name(name_),
         file(file_),
         line(line_),
         function(function_),
         failed_condition(failed_condition_),
-        extra(std::move(extra)),
+        extra(std::move(extra_)),
         what_str{""} {
   try {
     std::ostringstream converter;

@@ -29,24 +29,8 @@ namespace pammap {
 #define pammap_error_constructor_vars name_, file_, line_, function_, failed_condition_
 
 /** Error to flag an internal issue, e.g. if an internal assertion fails. */
-class AssertionError : public PamMapError {
- public:
+struct AssertionError : public PamMapError {
   AssertionError(pammap_error_constructor_args);
-};
-
-/** Error to flag that a function or a constructor got an invalid value
- *  or an invalid set of arguments and no more specific exception is available.
- */
-class ValueError : public PamMapError {
- public:
-  ValueError(pammap_error_constructor_args, std::string description = "");
-};
-
-/** Error to flag that in invalid operation is requested, e.g. a release of unowned memory
- *  or the object is in an invalid state and no more specific exception is available */
-class InvalidStateError : public PamMapError {
- public:
-  InvalidStateError(pammap_error_constructor_args, std::string description = "");
 };
 
 /** Error thrown when a dict or a pammap encounters an unknown key */
@@ -56,8 +40,30 @@ class KeyError : public PamMapError {
   std::string key;
 };
 
+#define declare_description_error(name)                                \
+  struct name : public PamMapError {                                   \
+    name(pammap_error_constructor_args, std::string description = ""); \
+  }
+
+/** Error to flag that a function or a constructor got an invalid value
+ *  or an invalid set of arguments and no more specific exception is available.
+ */
+declare_description_error(ValueError);
+
+/** Error to flag that in invalid operation is requested, e.g. a release of unowned memory
+ *  or the object is in an invalid state and no more specific exception is available */
+declare_description_error(InvalidStateError);
+
+/** Error to flag that something is not yet implemented. */
+declare_description_error(NotImplementedError);
+
+#undef declare_description_error
 #undef pammap_error_constructor_args
 #undef pammap_error_constructor_vars
+
+//
+// Helper macros
+//
 
 /** Assert a condition and if it evaluates to false, throw an AssertionError
  */
