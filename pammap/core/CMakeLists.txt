@@ -25,6 +25,8 @@ set(PAMMAP_SOURCES
 	PamMapValue.cpp
 	demangle.cpp
 	PamMap.cpp
+	PamMapError.cpp
+	exceptions.cpp
 )
 
 # Build the C++ library
@@ -38,6 +40,3 @@ file(DOWNLOAD https://raw.githubusercontent.com/numpy/numpy/v1.13.1/tools/swig/n
 	EXPECTED_HASH
 	SHA256=bc658c3e9f4ecc5343041339c0697314398fd7cd0e442aa2d424b71086e305ec
 )
-
-# TODO Dependency for now.
-target_link_libraries(pammap PUBLIC krims)

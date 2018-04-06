@@ -48,9 +48,6 @@ class PamMap {
   typedef PamMapIterator<true> const_iterator;
   typedef PamMapIterator<false> iterator;
 
-  /** Exception thrown if a key is not valid */
-  DefException1(ExcUnknownKey, std::string, << "The key " << arg1 << " is unknown.");
-
   /** \name Constructors, destructors and assignment */
   ///@{
   /** \brief default constructor
@@ -235,7 +232,7 @@ class PamMap {
   /** Return a reference to the value at a given key
    *  with the specified type.
    *
-   * If the value cannot be found an ExcUnknownKey is thrown.
+   * If the value cannot be found a KeyError is thrown.
    * If the type requested is wrong the program is aborted.
    *
    * \note This directly modifies the data in memory, so all
@@ -282,7 +279,7 @@ class PamMap {
    * */
   PamMapValue& at_raw_value(const std::string& key) {
     auto itkey = m_container_ptr->find(make_full_key(key));
-    assert_throw(itkey != std::end(*m_container_ptr), ExcUnknownKey(key));
+    pammap_throw(itkey != std::end(*m_container_ptr), KeyError, key);
     return itkey->second;
   }
 
@@ -294,7 +291,7 @@ class PamMap {
    * */
   const PamMapValue& at_raw_value(const std::string& key) const {
     auto itkey = m_container_ptr->find(make_full_key(key));
-    assert_throw(itkey != std::end(*m_container_ptr), ExcUnknownKey(key));
+    pammap_throw(itkey != std::end(*m_container_ptr), KeyError, key);
     return itkey->second;
   }
   ///@}
@@ -307,12 +304,8 @@ class PamMap {
   /** Return a string which describes the type of the
    * stored data
    *
-   * \note This function only returns a senbible value if:
-   *   - The code is compiled in DEBUG mode
-   *   - The OS exposes an interface for type demangling.
-   *   - In RELEASE builds this function always returns
-   *     the string "<no typeinfo>".
-   *
+   * \note This function only returns a senbible value if
+   *       the OS exposes an interface for type demangling.
    */
   std::string type_name_of(const std::string& key) const {
     return at_raw_value(key).type_name();

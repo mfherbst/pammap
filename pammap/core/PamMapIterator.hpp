@@ -19,7 +19,7 @@
 
 #pragma once
 #include "PamMapAccessor.hpp"
-#include "krims/ExceptionSystem.hh"
+#include "exceptions.hpp"
 #include <iterator>
 #include <map>
 #include <memory>
@@ -118,15 +118,15 @@ PamMapAccessor<Const>* PamMapIterator<Const>::operator->() const {
 template <bool Const>
 std::string PamMapIterator<Const>::strip_location_prefix(const std::string& key) const {
   // The first part needs to be exactly the location:
-  assert_internal(key.size() >= m_location.size());
-  assert_internal(0 == key.compare(0, m_location.size(), m_location));
+  pammap_assert(key.size() >= m_location.size());
+  pammap_assert(0 == key.compare(0, m_location.size(), m_location));
 
   if (key.size() <= m_location.size()) {
     return "/";
   } else {
     std::string res = key.substr(m_location.size());
-    assert_internal(res[0] == '/' || res.length() == 0);
-    assert_internal(res.back() != '/');
+    pammap_assert(res[0] == '/' || res.length() == 0);
+    pammap_assert(res.back() != '/');
     return res;
   }
 }

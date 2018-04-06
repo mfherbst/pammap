@@ -18,7 +18,7 @@
 //
 
 #include "DataBlock.hpp"
-#include "krims/ExceptionSystem.hh"
+#include "exceptions.hpp"
 
 namespace pammap {
 
@@ -44,7 +44,12 @@ DataBlock<T>::DataBlock(std::vector<T> data, std::vector<size_t> shape)
     m_strides[i] = acc;
     acc *= shape[i];
   }
-  assert_size(acc, m_size);
+
+  pammap_throw(acc == m_size, ValueError,
+               "Size of the data (== " + std::to_string(m_size) +
+                     ") does not agree with the total number of entries computed by the "
+                     "shape (== " +
+                     std::to_string(acc) + ").");
 
   m_data = new T[m_size];
   std::copy(data.begin(), data.end(), m_data);
@@ -146,8 +151,8 @@ DataBlock<T>::DataBlock(const DataBlock& other, Memory ownership)
 
 template <typename T>
 std::unique_ptr<T[]> DataBlock<T>::release() {
-  assert_throw(m_ownership == Memory::OwnCopy,
-               krims::ExcInvalidState("Can only release memory if I am the owner."));
+  pammap_throw(m_ownership == Memory::OwnCopy, InvalidStateError,
+               "Cannot release memory from an object, which does not own the memory.");
   return std::unique_ptr<T[]>(m_data);
   m_data      = nullptr;
   m_ownership = Memory::ViewOnly;

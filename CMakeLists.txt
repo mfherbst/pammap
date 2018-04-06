@@ -51,12 +51,6 @@ if (CMAKE_VERSION VERSION_GREATER 3.5.0)
 	set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
-# TODO Hard-coded
-set(KRIMS_DIR "${PROJECT_SOURCE_DIR}/krims" CACHE STRING "Hard-coded krims directory")
-include_directories("${KRIMS_DIR}/src")
-include_directories("${KRIMS_DIR}/build/src")
-link_directories("${KRIMS_DIR}/build/src/krims")
-
 ##########################################################################
 # Pass on to subdirectories
 add_subdirectory(pammap)

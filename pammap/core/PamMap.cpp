@@ -18,7 +18,7 @@
 //
 
 #include "PamMap.hpp"
-#include "krims/ExceptionSystem.hh"
+#include "exceptions.hpp"
 #include <vector>
 
 namespace pammap {
@@ -128,8 +128,8 @@ void PamMap::update(const std::string& key, PamMap&& other) {
 }
 
 std::string PamMap::make_full_key(const std::string& key) const {
-  assert_internal(m_location[0] == '/' || m_location.length() == 0);
-  assert_internal(m_location.back() != '/');
+  pammap_assert(m_location[0] == '/' || m_location.length() == 0);
+  pammap_assert(m_location.back() != '/');
 
   // Make a stack out of the key:
   std::vector<std::string> pathparts;
@@ -168,8 +168,8 @@ std::string PamMap::make_full_key(const std::string& key) const {
     res += "/" + part;
   }
 
-  assert_internal(res.length() == 0 || res.back() != '/');
-  assert_internal(res.length() == 0 || res[0] == '/');
+  pammap_assert(res.length() == 0 || res.back() != '/');
+  pammap_assert(res.length() == 0 || res[0] == '/');
 
   return res;
 }
