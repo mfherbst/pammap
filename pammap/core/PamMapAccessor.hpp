@@ -19,6 +19,7 @@
 
 #pragma once
 #include "PamMapValue.hxx"
+#include "value_cast.hpp"
 #include <string>
 
 namespace pammap {
@@ -44,7 +45,7 @@ class PamMapAccessor {
    **/
   template <typename T>
   const T& value() const {
-    return any_cast<const T&>(m_value);
+    return value_cast<const T&>(m_key, m_value);
   }
 
   /** Return a reference to the raw value object the accessor holds. (Const
@@ -59,7 +60,7 @@ class PamMapAccessor {
   PamMapAccessor(const std::string key, const PamMapValue& value)
         : m_key(key), m_value(value) {}
 
- private:
+ protected:
   const std::string m_key;
   const PamMapValue& m_value;
 };
@@ -80,7 +81,7 @@ class PamMapAccessor<false> : public PamMapAccessor<true> {
    **/
   template <typename T>
   T& value() {
-    return any_cast<T&>(m_value);
+    return value_cast<T&>(m_key, m_value);
   }
 
   /** Return a reference to the raw value object the accessor holds.

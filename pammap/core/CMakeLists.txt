@@ -22,10 +22,10 @@
 # C++ sourle files in the repository
 set(PAMMAP_SOURCES
 	DataBlock.cpp
-	PamMapValue.cpp
-	demangle.cpp
 	PamMap.cpp
 	PamMapError.cpp
+	PamMapValue.cpp
+	demangle.cpp
 	exceptions.cpp
 )
 

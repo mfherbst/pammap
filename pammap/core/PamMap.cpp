@@ -78,7 +78,7 @@ T& PamMap::at(const std::string& key, T& default_value) {
   if (itkey == std::end(*m_container_ptr)) {
     return default_value;
   } else {
-    return any_cast<T&>(itkey->second);
+    return value_cast<T&>(key, itkey->second);
   }
 }
 
@@ -88,7 +88,7 @@ const T& PamMap::at(const std::string& key, const T& default_value) const {
   if (itkey == std::end(*m_container_ptr)) {
     return default_value;
   } else {
-    return any_cast<const T&>(itkey->second);
+    return value_cast<const T&>(key, itkey->second);
   }
 }
 

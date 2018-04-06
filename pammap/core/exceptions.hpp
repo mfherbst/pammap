@@ -50,6 +50,11 @@ class KeyError : public PamMapError {
  */
 declare_description_error(ValueError);
 
+/** Error to flag that a function or a constructor had to deal with invalid
+ *  or conflicting type information.
+ */
+declare_description_error(TypeError);
+
 /** Error to flag that in invalid operation is requested, e.g. a release of unowned memory
  *  or the object is in an invalid state and no more specific exception is available */
 declare_description_error(InvalidStateError);

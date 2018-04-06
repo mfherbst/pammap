@@ -41,9 +41,10 @@ KeyError::KeyError(pammap_error_constructor_args, std::string key_)
         : PamMapError(pammap_error_constructor_vars, std::move(description)) {}
 
 /* clang-format off */
-define_description_error(ValueError)
 define_description_error(InvalidStateError)
 define_description_error(NotImplementedError)
+define_description_error(TypeError)
+define_description_error(ValueError)
 /* clang-format on */
 
 }  // namespace pammap

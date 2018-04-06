@@ -19,6 +19,7 @@
 
 #pragma once
 #include "PamMapIterator.hpp"
+#include "value_cast.hpp"
 
 namespace pammap {
 /** GenMap implements a map from a std::string to objects of a range
@@ -245,7 +246,7 @@ class PamMap {
    */
   template <typename T>
   T& at(const std::string& key) {
-    return any_cast<T&>(at_raw_value(key));
+    return value_cast<T&>(key, at_raw_value(key));
   }
 
   /** \brief Return a reference to the value at a given key
@@ -254,7 +255,7 @@ class PamMap {
    */
   template <typename T>
   const T& at(const std::string& key) const {
-    return any_cast<const T&>(at_raw_value(key));
+    return value_cast<const T&>(key, at_raw_value(key));
   }
 
   /** \brief Get the value of an element.
