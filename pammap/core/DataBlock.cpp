@@ -24,50 +24,63 @@ namespace pammap {
 
 // TODO This code needs proper refactoring
 
-namespace {
-size_t product(const std::vector<size_t>& shape) {
-  size_t acc = 1;
-  for (auto& s : shape) acc *= s;
-  return acc;
-}
-}  // namespace
-
-template <typename T>
-DataBlock<T>::DataBlock(std::vector<T> data, std::vector<size_t> shape)
-      : m_data(nullptr),
-        m_size(data.size()),
-        m_shape(shape),
-        m_strides(shape.size(), 0),
-        m_ownership{Memory::OwnCopy} {
+std::vector<size_t> strides_c(const std::vector<size_t>& shape) {
+  std::vector<size_t> strides(shape.size(), 0);
   size_t acc = 1;
   for (size_t i = 0; i < shape.size(); ++i) {
-    m_strides[i] = acc;
+    strides[i] = acc;
     acc *= shape[i];
   }
+  return strides;
+}
 
-  pammap_throw(acc == m_size, ValueError,
+std::vector<size_t> strides_fortran(const std::vector<size_t>& shape) {
+  const size_t size = shape.size();
+  std::vector<size_t> strides(size, 0);
+  size_t acc = 1;
+  for (size_t i = 1; i <= size; ++i) {
+    strides[size - i] = acc;
+    acc *= shape[size - i];
+  }
+  return strides;
+}
+
+template <typename T>
+DataBlock<T>::DataBlock(std::vector<T> data, std::vector<size_t> shape,
+                        std::vector<size_t> strides)
+      : m_data(nullptr),
+        m_size(data.size()),
+        m_shape(std::move(shape)),
+        m_strides(std::move(strides)),
+        m_ownership{Memory::OwnCopy} {
+  size_t acc = 1;
+  for (size_t i = 0; i < m_shape.size(); ++i) {
+    acc *= m_shape[i];
+  }
+  pammap_throw(m_size != acc, ValueError,
                "Size of the data (== " + std::to_string(m_size) +
                      ") does not agree with the total number of entries computed by the "
                      "shape (== " +
                      std::to_string(acc) + ").");
+
+  // TODO Check strides
 
   m_data = new T[m_size];
   std::copy(data.begin(), data.end(), m_data);
 }
 
 template <typename T>
-DataBlock<T>::DataBlock(T* data, std::vector<size_t> shape, Memory ownership)
+DataBlock<T>::DataBlock(T* data, std::vector<size_t> shape, std::vector<size_t> strides,
+                        Memory ownership)
       : m_data(nullptr),
         m_size(0),
-        m_shape(shape),
-        m_strides(shape.size(), 0),
+        m_shape(std::move(shape)),
+        m_strides(std::move(strides)),
         m_ownership{ownership} {
-  size_t acc = 1;
+  size_t m_size = 1;
   for (size_t i = 0; i < shape.size(); ++i) {
-    m_strides[i] = acc;
-    acc *= shape[i];
+    m_size *= m_shape[i];
   }
-  m_size = acc;
 
   if (m_ownership == Memory::ViewOnly) {
     m_data = data;
@@ -150,12 +163,28 @@ DataBlock<T>::DataBlock(const DataBlock& other, Memory ownership)
 }
 
 template <typename T>
-std::unique_ptr<T[]> DataBlock<T>::release() {
-  pammap_throw(m_ownership == Memory::OwnCopy, InvalidStateError,
-               "Cannot release memory from an object, which does not own the memory.");
-  return std::unique_ptr<T[]>(m_data);
-  m_data      = nullptr;
-  m_ownership = Memory::ViewOnly;
+bool DataBlock<T>::is_fortran_contiguous() const {
+  if (ndim() == 1) return true;
+  const size_t size = m_shape.size();
+
+  size_t acc = 1;
+  for (size_t i = 1; i <= size; ++i) {
+    if (m_strides[size - i] != acc) return false;
+    acc *= m_shape[size - i];
+  }
+  return true;
+}
+
+template <typename T>
+bool DataBlock<T>::is_c_contiguous() const {
+  if (ndim() == 1) return true;
+
+  size_t acc = 1;
+  for (size_t i = 0; i < m_shape.size(); ++i) {
+    if (m_strides[i] != acc) return false;
+    acc *= m_shape[i];
+  }
+  return true;
 }
 
 }  // namespace pammap

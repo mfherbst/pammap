@@ -32,6 +32,12 @@ enum class Memory {
   OwnCopy,
 };
 
+/** Build C-like strides from a shape vector */
+std::vector<size_t> strides_c(const std::vector<size_t>& shape);
+
+/** Build Fortran-like strides from a shape vector */
+std::vector<size_t> strides_fortran(const std::vector<size_t>& shape);
+
 /** Simple low-level class to store a block of data */
 template <typename T>
 class DataBlock {
@@ -48,7 +54,7 @@ class DataBlock {
           m_strides(1),
           m_ownership(Memory::OwnCopy) {}
 
-  /** Initialise from iterator range as 1d array */
+  /** Initialise from iterator range as 1d array by making a copy */
   template <typename Input>
   explicit DataBlock(Input first, Input last)
         : m_data(nullptr),
@@ -60,19 +66,26 @@ class DataBlock {
     std::copy(first, last, m_data);
   }
 
-  /** Initialise from initializer_list as 1d array */
+  /** Initialise from initializer_list as 1d array by making a copy */
   DataBlock(std::initializer_list<T> data) : DataBlock(data.begin(), data.end()) {}
 
-  /** Initialise from std::vector as 1d array */
-  DataBlock(std::vector<T> data) : DataBlock(data, {data.size()}) {}
+  /** Initialise from std::vector as 1d array by making a copy */
+  DataBlock(std::vector<T> data) : DataBlock(std::move(data), {data.size()}, {1}) {}
 
-  /** Initialise from vector, shape and memory layout */
-  DataBlock(std::vector<T> data, std::vector<size_t> shape);
+  /** Initialise from vector and shape by making a copy */
+  DataBlock(std::vector<T> data, std::vector<size_t> shape)
+        : DataBlock(std::move(data), shape, strides_c(shape)) {}
 
-  /** Initialise by copying from a memory location and a shape,
-   *  assuming a certain memory layout. */
-  explicit DataBlock(T* data_, std::vector<size_t> shape,
-                     Memory ownership = Memory::OwnCopy);
+  /** Initialise from vector, shape and strides by making a copy */
+  DataBlock(std::vector<T> data, std::vector<size_t> shape, std::vector<size_t> strides);
+
+  /** Initialise by copying from a memory location and a shape */
+  DataBlock(T* data_, std::vector<size_t> shape, Memory ownership = Memory::OwnCopy)
+        : DataBlock(data_, shape, strides_c(shape), ownership) {}
+
+  /** Initialise by copying from a memory location, a shape and strides */
+  DataBlock(T* data_, std::vector<size_t> shape, std::vector<size_t> strides,
+            Memory ownership = Memory::OwnCopy);
 
   /** TODO use copy-and-swap idiom here! */
   DataBlock(DataBlock&&);
@@ -88,6 +101,7 @@ class DataBlock {
    */
   DataBlock(const DataBlock& other, Memory ownership);
 
+  /** Destructor: Delete data if this is the copy holder */
   ~DataBlock() {
     if (m_ownership == Memory::OwnCopy) {
       delete[] m_data;
@@ -114,6 +128,9 @@ class DataBlock {
   const_iterator cend() const { return m_data + m_size; }
   //@}
 
+  /** Dimensionality */
+  size_t ndim() const { return m_shape.size(); }
+
   /** Total size of the data */
   size_t size() const { return m_size; }
 
@@ -123,9 +140,11 @@ class DataBlock {
   /** Shape of the data */
   std::vector<size_t> shape() const { return m_shape; }
 
-  /** Release the contained pointer.
-   *  The caller will be responsible for destruction */
-  std::unique_ptr<T[]> release();
+  /** Is the data Fortran contiguous */
+  bool is_fortran_contiguous() const;
+
+  /** Is the data c contiguous */
+  bool is_c_contiguous() const;
 
  private:
   /** The pointer to the actual data */

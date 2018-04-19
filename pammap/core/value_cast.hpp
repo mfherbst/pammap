@@ -25,7 +25,8 @@
 namespace pammap {
 
 namespace detail {
-inline void throw_value_cast_type_error(const PamMapValue& operand,
+inline void throw_value_cast_type_error(const std::string& key,
+                                        const PamMapValue& operand,
                                         const std::type_info& reqtype) {
   pammap_throw(false, TypeError,
                "Key '" + key + "' points to a value of type '" + operand.type_name() +
@@ -44,7 +45,7 @@ ValueType value_cast(const std::string& key, const PamMapValue& operand) {
   try {
     return any_cast<ValueType>(operand);
   } catch (bad_any_cast& e) {
-    throw_value_cast_type_error(operand, typeid(ValueType));
+    detail::throw_value_cast_type_error(key, operand, typeid(ValueType));
   }
 }
 
@@ -53,7 +54,7 @@ ValueType value_cast(const std::string& key, PamMapValue& operand) {
   try {
     return any_cast<ValueType>(operand);
   } catch (bad_any_cast& e) {
-    throw_value_cast_type_error(operand, typeid(ValueType));
+    detail::throw_value_cast_type_error(key, operand, typeid(ValueType));
   }
 }
 
@@ -62,7 +63,7 @@ ValueType value_cast(const std::string& key, PamMapValue&& operand) {
   try {
     return any_cast<ValueType>(operand);
   } catch (bad_any_cast& e) {
-    throw_value_cast_type_error(operand, typeid(ValueType));
+    detail::throw_value_cast_type_error(key, operand, typeid(ValueType));
   }
 }
 //@}
