@@ -22,7 +22,8 @@
 ## ---------------------------------------------------------------------
 
 
-from common import licence_header_cpp, NAMESPACE_OPEN, NAMESPACE_CLOSE, to_cpp_type
+from common import licence_header_cpp, NAMESPACE_OPEN, NAMESPACE_CLOSE
+from common import make_supported_cpp_types
 import constants
 
 
@@ -31,12 +32,13 @@ def generate():
     output += ["#include \"typedefs.hxx\""]
 
     output += NAMESPACE_OPEN
-    for dtype in constants.DTYPES:
+    for cpptype in make_supported_cpp_types(constants.DTYPES):
         output.append("template const {0:}& PamMap::at<{0:}>("
                       "const std::string& key, const {0:}& default_value) "
-                      "const;".format(to_cpp_type(dtype)))
+                      "const;".format(cpptype))
         output.append("template {0:}& PamMap::at<{0:}>(const std::string& key, "
-                      "{0:}& default_value);".format(to_cpp_type(dtype)))
+                      "{0:}& default_value);".format(cpptype))
+
     output += NAMESPACE_CLOSE
 
     return "\n".join(output)
