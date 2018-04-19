@@ -17,4 +17,4 @@ high-level to low-level conveniently.
 - Idea: Low level code is modified and high-level code adapts automatically.
 
 ## Requirements
-- C++ ABI
+- C++ 17 compiler (for now)
