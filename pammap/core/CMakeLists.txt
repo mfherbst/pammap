@@ -21,7 +21,7 @@
 
 # C++ sourle files in the repository
 set(PAMMAP_SOURCES
-	ArrayView.cxx
+	ArrayView.cpp
 	PamMap.cpp
 	PamMapError.cpp
 	PamMapValue.cpp

@@ -27,7 +27,6 @@ import constants
 
 def generate():
     output = licence_header_cpp(__file__)
-    output += ["#include \"ArrayView.hpp\""]
     output += ["#include \"typedefs.hxx\""]
 
     output += NAMESPACE_OPEN

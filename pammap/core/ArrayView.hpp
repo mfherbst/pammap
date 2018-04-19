@@ -30,8 +30,7 @@ struct ArrayViewBase {
   };
 
   ArrayViewBase() = default;
-  ArrayViewBase(std::vector<size_t> shape_, std::vector<size_t> strides_)
-        : shape(shape_), strides(strides_) {}
+  ArrayViewBase(std::vector<size_t> shape_, std::vector<size_t> strides_);
 
   /** The shape in each dimension */
   std::vector<size_t> shape;
