@@ -65,6 +65,18 @@ bool ArrayViewBase::is_c_contiguous() const {
   return true;
 }
 
+template <typename T>
+bool ArrayView<T>::operator==(const ArrayView& other) const {
+  if (m_size != other.m_size) return false;
+  if (m_shape != other.m_shape) return false;
+  if (m_strides != other.m_strides) return false;
+  if (data == other.data) return true;
+  for (size_t i = 0; i < m_size; ++i) {
+    if (data[i] != other.data[i]) return false;
+  }
+  return true;
+}
+
 }  // namespace pammap
 
 #include "ArrayView.instantiation.hxx"

@@ -68,7 +68,7 @@ class ArrayViewBase {
   /** Is the striding C contiguous */
   bool is_c_contiguous() const;
 
- private:
+ protected:
   /** The size, i.e. total number of elements */
   size_t m_size = 0;
 
@@ -100,6 +100,18 @@ struct ArrayView : public ArrayViewBase {
         : ArrayViewBase{{vector.size()}, {1}}, data{vector.data()} {}
   ArrayView(T* data_, std::vector<size_t> shape_, std::vector<size_t> strides_)
         : ArrayViewBase{shape_, strides_}, data(data_) {}
+
+  /** Compare two ArrayView objects for equality.
+   *
+   * They are considered equal if their data and shape/strides are equal
+   */
+  bool operator==(const ArrayView& other) const;
+
+  /** Compare two ArrayView objects for unequality.
+   *
+   * Two ArrayViews are considered equal if their data and shape/strides are equal
+   */
+  bool operator!=(const ArrayView& other) const { return !operator==(other); }
 };
 
 }  // namespace pammap
