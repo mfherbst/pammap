@@ -41,7 +41,7 @@ TEST_CASE("Dummy test") {
   for (auto& kv : map) {
     if (kv.key() == "/test/list" || kv.key() == "/test/list2") {
       std::cout << kv.key() << " " << kv.type_name() << " = "
-                << kv.value<ArrayView<Integer>>().shape[0] << std::endl;
+                << kv.value<ArrayView<Integer>>().shape()[0] << std::endl;
     } else {
       std::cout << kv.key() << " " << kv.type_name() << " = " << kv.value<Integer>()
                 << std::endl;

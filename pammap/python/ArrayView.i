@@ -48,16 +48,16 @@
 
   std::vector<size_t> shape(array_numdims(array));
   std::vector<size_t> strides(array_numdims(array));
+  const size_t typebytes = sizeof(DATA_TYPE::value_type);
   for (int i=0; i < array_numdims(array); ++i) {
     shape[i] = array_size(array, i);
-    strides[i] = array_stride(array, i);
+    strides[i] = array_stride(array, i) / typebytes;
   }
 
   $1 = DATA_TYPE(
     static_cast<typename DATA_TYPE::value_type*>(array_data(array)),
     shape, strides);
-  $1.owner = static_cast<void*>(array);
-  $1.owner_type = pammap::ArrayViewBase::NUMPY;
+  $1.reset_base(static_cast<void*>(array), pammap::ArrayViewBase::NUMPY);
 }
 
 %typemap(out,fragment="NumPy_Fragments")
@@ -65,19 +65,20 @@
   (PyArrayObject* array = NULL)
 {
   // Need to be build from numpy
-  if (!$1.owner || $1.owner_type != pammap::ArrayViewBase::NUMPY) {
+  if (!$1.base() || $1.base_kind() != pammap::ArrayViewBase::NUMPY) {
     SWIG_fail;
   }
-  PyObject* obj = static_cast<PyObject*>($1.owner);
+  PyObject* obj = static_cast<PyObject*>($1.base());
   array = obj_to_array_no_conversion(obj, DATA_TYPECODE);
 
   // Need to be a proper numpy array
   if (!array || !require_native(array)) SWIG_fail;
 
   // Shape and strides need to agree
+  const size_t typebytes = sizeof(DATA_TYPE::value_type);
   for (int i=0; i < array_numdims(array); ++i) {
-    if ($1.shape[i] != array_size(array, i) ||
-        $1.strides[i] != array_size(array, i)) {
+    if ($1.shape()[i] != array_size(array, i) ||
+        $1.strides()[i] * typebytes != array_size(array, i)) {
       SWIG_fail;
     }
   }

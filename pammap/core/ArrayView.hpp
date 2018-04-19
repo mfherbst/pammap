@@ -22,9 +22,15 @@
 
 namespace pammap {
 
-struct ArrayViewBase {
-  /** Enum to mark the kind of object the owner pointer points to */
-  enum OWNER_TYPE {
+// TODO One could at some point go as far as integrating with the reference counting of
+//      numpy arrays is well.
+//      By the means of the register function a base can be registered and the counter
+//      increased and conversely with the unregister function.
+
+class ArrayViewBase {
+ public:
+  /** Enum to mark the kind of object the base pointer points to */
+  enum BASE_KIND {
     NONE  = 0,
     NUMPY = 1,
   };
@@ -32,19 +38,52 @@ struct ArrayViewBase {
   ArrayViewBase() = default;
   ArrayViewBase(std::vector<size_t> shape_, std::vector<size_t> strides_);
 
+  /** The number of elements */
+  size_t size() const { return m_size; }
+
+  /** The number of dimensions */
+  size_t ndim() const { return m_shape.size(); }
+
   /** The shape in each dimension */
-  std::vector<size_t> shape;
+  const std::vector<size_t>& shape() const { return m_shape; }
 
   /** The strides in each dimension */
-  std::vector<size_t> strides;
+  const std::vector<size_t>& strides() const { return m_strides; }
 
-  /** Some extra pointer to additional data,
-   *  e.g. the original numpy array the data points to.
-   */
-  void* owner = nullptr;
+  /** Reset the base object, i.e. replace it by a new one */
+  void reset_base(void* base, BASE_KIND base_kind);
 
-  /** Some info about the owner pointer */
-  OWNER_TYPE owner_type = NONE;
+  /** Reset the base object, i.e. purge the current reference */
+  void reset_base();
+
+  /** Obtain the pointer to the current base object */
+  void* base() const { return m_base; }
+
+  /** Type of the base object */
+  BASE_KIND base_kind() const { return m_base_kind; }
+
+  /** Is the striding Fortran contiguous */
+  bool is_fortran_contiguous() const;
+
+  /** Is the striding C contiguous */
+  bool is_c_contiguous() const;
+
+ private:
+  /** The size, i.e. total number of elements */
+  size_t m_size = 0;
+
+  /** The shape in each dimension */
+  std::vector<size_t> m_shape;
+
+  /** The strides in each dimension */
+  std::vector<size_t> m_strides;
+
+  /** Some extra pointer to additional structure,
+   *  e.g. the original numpy PyArrayObject, to which the data belongs */
+  void* m_base = nullptr;
+
+  /** What kind of object does the base pointer point to? */
+  BASE_KIND m_base_kind = NONE;
 };
 
 /** Light-weight class to view some array data. */
