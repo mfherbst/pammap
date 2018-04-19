@@ -19,13 +19,14 @@
 ##
 ## ---------------------------------------------------------------------
 
-# To find catch.hpp and the headers of the core library
-include_directories("${pammap_BINARY_DIR}")
-include_directories("..")
+# To find the headers of the core library
+include_directories(..)
 
 add_executable(test_pammap_core
+	# PamMapTests.cpp
 	test.cpp
+	ArrayViewTests.cpp
 	main.cpp
 )
-target_link_libraries(test_pammap_core pammap_core)
+target_link_libraries(test_pammap_core pammap_core Catch)
 add_test(NAME "Test pammap core C++ library" COMMAND test_pammap_core)

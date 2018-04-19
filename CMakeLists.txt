@@ -52,25 +52,30 @@ if (CMAKE_VERSION VERSION_GREATER 3.5.0)
 endif()
 
 ##########################################################################
-# Pass on to subdirectories
+# Testing setup
 
 option(PAMMAP_ENABLE_TESTS "Enable testing of pammap" ON)
 if(PAMMAP_ENABLE_TESTS)
-	enable_testing()
-
-	# Download catch
+	# Download catch and setup as imported target
 	file(DOWNLOAD
 		https://github.com/catchorg/Catch2/releases/download/v2.2.0/catch.hpp
 		${pammap_BINARY_DIR}/catch2/catch.hpp
 		EXPECTED_HASH
 		SHA256=f92b29606d21ebd90a52f16d0cf963cef49fa984b2fdea7091b33545af44eeea
 	)
+	add_library(Catch INTERFACE)
+	target_include_directories(Catch INTERFACE ${pammap_BINARY_DIR})
+
+	enable_testing()
 endif()
+
+##########################################################################
+# Pass on to subdirectories
 
 add_subdirectory(pammap)
 
-option(PAMMAP_ENABLE_EXAMPLES "Enable building pammap examples" ON)
-if(PAMMAP_ENABLE_EXAMPLES)
+option(PAMMAP_BUILD_EXAMPLES "Enable building pammap examples" ON)
+if(PAMMAP_BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 

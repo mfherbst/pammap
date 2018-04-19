@@ -59,7 +59,7 @@ def BuildBaseFlags():
     '-fexceptions',
     # Compile debug code as well
     '-DDEBUG',
-    # Compile as c++14
+    # Compile as c++17
     '-std=c++17',
     # Treat .h header files as c++:
     '-x', 'c++',
@@ -68,7 +68,7 @@ def BuildBaseFlags():
     # To suppress errors shown here, use "-isystem"
     # instead of "-I"
     '-I', './pammap/core',
-    '-isystem', './build/tests',
+    '-isystem', './build',
     '-isystem', FindStdInclude(),
   ]
 
