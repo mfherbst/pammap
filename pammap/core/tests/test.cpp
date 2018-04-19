@@ -39,12 +39,21 @@ TEST_CASE("Dummy test") {
   test.update("list2", view);
 
   for (auto& kv : map) {
-    if (kv.key() == "/test/list" || kv.key() == "/test/list2") {
-      std::cout << kv.key() << " " << kv.type_name() << " = "
-                << kv.value<ArrayView<Integer>>().shape()[0] << std::endl;
-    } else {
-      std::cout << kv.key() << " " << kv.type_name() << " = " << kv.value<Integer>()
-                << std::endl;
+    if (kv.key() == "/test/list") {
+      CHECK(kv.type_name() == "pammap::ArrayView<long>");
+      CHECK(kv.value<ArrayView<Integer>>().shape()[0] == 3);
+    } else if (kv.key() == "/test/list2") {
+      CHECK(kv.type_name() == "pammap::ArrayView<long>");
+      CHECK(kv.value<ArrayView<Integer>>().shape()[0] == 3);
+    } else if (kv.key() == "/a/b/c") {
+      CHECK(kv.type_name() == "long");
+      CHECK(kv.value<Integer>() == 0);
+    } else if (kv.key() == "/cde") {
+      CHECK(kv.type_name() == "long");
+      CHECK(kv.value<Integer>() == 4);
+    } else if (kv.key() == "/d/ou/ble") {
+      CHECK(kv.type_name() == "long");
+      CHECK(kv.value<Integer>() == 2);
     }
   }
 

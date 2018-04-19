@@ -23,9 +23,9 @@
 include_directories(..)
 
 add_executable(test_pammap_core
-	# PamMapTests.cpp
 	test.cpp
 	ArrayViewTests.cpp
+	PamMapTests.cpp
 	main.cpp
 )
 target_link_libraries(test_pammap_core pammap_core Catch)
