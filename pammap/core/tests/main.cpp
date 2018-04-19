@@ -19,4 +19,4 @@
 
 // Let catch define a main function here automatically.
 #define CATCH_CONFIG_MAIN
-#include <catch.hpp>
+#include <catch2/catch.hpp>

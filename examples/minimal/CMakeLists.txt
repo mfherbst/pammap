@@ -33,7 +33,8 @@ find_package(PythonLibs   REQUIRED)
 
 # C++ and swig includes
 include_directories("${PROJECT_SOURCE_DIR}/pammap/core")
-include_directories("${PROJECT_BINARY_DIR}/pammap/core")
+include_directories("${PROJECT_SOURCE_DIR}/pammap/python")
+include_directories("${PROJECT_BINARY_DIR}/pammap/python")
 
 ##################
 #-- Testmodule --#
@@ -53,4 +54,4 @@ target_include_directories(
 	PRIVATE ${CMAKE_CURRENT_LIST_DIR}
 	PUBLIC ${PYTHON_INCLUDE_PATH}
 )
-swig_link_libraries(${MODULE_NAME} ${PYTHON_LIBRARIES} pammap)
+swig_link_libraries(${MODULE_NAME} ${PYTHON_LIBRARIES} pammap_core)

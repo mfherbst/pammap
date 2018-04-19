@@ -23,10 +23,13 @@
 
 from common import to_cpp_blocktype
 import constants
+import os
+
+thisdir = os.path.dirname(__file__)
 
 
 def generate():
-    with open("ArrayView.i.template") as f:
+    with open(os.path.join(thisdir, "ArrayView.i.template")) as f:
         original = f.readlines()
 
     output = [""]

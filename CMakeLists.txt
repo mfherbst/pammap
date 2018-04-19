@@ -53,6 +53,20 @@ endif()
 
 ##########################################################################
 # Pass on to subdirectories
+
+option(PAMMAP_ENABLE_TESTS "Enable testing of pammap" ON)
+if(PAMMAP_ENABLE_TESTS)
+	enable_testing()
+
+	# Download catch
+	file(DOWNLOAD
+		https://github.com/catchorg/Catch2/releases/download/v2.2.0/catch.hpp
+		${pammap_BINARY_DIR}/catch2/catch.hpp
+		EXPECTED_HASH
+		SHA256=f92b29606d21ebd90a52f16d0cf963cef49fa984b2fdea7091b33545af44eeea
+	)
+endif()
+
 add_subdirectory(pammap)
 
 option(PAMMAP_ENABLE_EXAMPLES "Enable building pammap examples" ON)
@@ -60,11 +74,6 @@ if(PAMMAP_ENABLE_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
-option(PAMMAP_ENABLE_TESTS "Enable testing of pammap" ON)
-if(PAMMAP_ENABLE_TESTS)
-	enable_testing()
-	add_subdirectory(tests)
-endif()
 
 ##########################################################################
 # Finish off

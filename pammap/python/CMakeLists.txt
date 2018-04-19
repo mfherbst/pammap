@@ -19,21 +19,9 @@
 ##
 ## ---------------------------------------------------------------------
 
-# C++ sourle files in the repository
-set(PAMMAP_SOURCES
-	ArrayView.cxx
-	PamMap.cpp
-	PamMapError.cpp
-	PamMapValue.cpp
-	demangle.cpp
-	exceptions.cpp
+# Download the numpy.i module we require from github
+file(DOWNLOAD https://raw.githubusercontent.com/numpy/numpy/v1.13.1/tools/swig/numpy.i
+	${CMAKE_CURRENT_BINARY_DIR}/numpy.i
+	EXPECTED_HASH
+	SHA256=bc658c3e9f4ecc5343041339c0697314398fd7cd0e442aa2d424b71086e305ec
 )
-
-# Build the C++ library
-include_directories("${PROJECT_SOURCE_DIR}")
-add_library(pammap_core ${PAMMAP_SOURCES})
-set_target_properties(pammap_core PROPERTIES VERSION "${PROJECT_VERSION}")
-
-if (PAMMAP_ENABLE_TESTS)
-	add_subdirectory(tests)
-endif()

@@ -53,17 +53,16 @@
     strides[i] = array_stride(array, i);
   }
 
-  $1 = DATA_TYPE().
-  $1.data = static_cast<typename DATA_TYPE::value_type*>(array_data(array));
-  $1.shape = std::move(shape);
-  $1.strides = std::move(strides);
+  $1 = DATA_TYPE(
+    static_cast<typename DATA_TYPE::value_type*>(array_data(array)),
+    shape, strides);
   $1.owner = static_cast<void*>(array);
   $1.owner_type = pammap::ArrayViewBase::NUMPY;
 }
 
 %typemap(out,fragment="NumPy_Fragments")
   (DATA_TYPE)
-  (PyObject* array = NULL)
+  (PyArrayObject* array = NULL)
 {
   // Need to be build from numpy
   if (!$1.owner || $1.owner_type != pammap::ArrayViewBase::NUMPY) {
@@ -84,7 +83,7 @@
   }
 
   // All fine, append as output
-  $result = SWIG_Python_AppendOutput($result,static_cast<PyObject*>(array));
+  $result = SWIG_Python_AppendOutput($result,(PyObject*)array);
 }
 %enddef
 
@@ -93,3 +92,7 @@
 // files instead.
 // In the full version the instantiation typemaps will be added here.
 //
+
+%arrayview_typemaps(pammap::ArrayView<pammap::Complex>, NPY_CDOUBLE)
+%arrayview_typemaps(pammap::ArrayView<pammap::Integer>, NPY_LONGLONG)
+%arrayview_typemaps(pammap::ArrayView<pammap::Float>, NPY_DOUBLE)
