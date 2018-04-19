@@ -21,13 +21,23 @@
 ##
 ## ---------------------------------------------------------------------
 
-import testmodule
-import numpy as np
+from common import licence_header_cpp, NAMESPACE_OPEN, NAMESPACE_CLOSE, to_cpp_type
+import constants
 
-a = np.array([1, 2, 5])
 
-pmap = testmodule.PamMap()
-pmap.update_integer("/integer", 4)
-pmap.update_integer_array("/array", a)
+def generate():
+    output = licence_header_cpp(__file__)
+    output += ["#include \"ArrayView.hpp\""]
+    output += ["#include \"typedefs.hxx\""]
 
-testmodule.print_keys(pmap)
+    output += NAMESPACE_OPEN
+    for dtype in constants.DTYPES:
+        output.append("template class ArrayView<{0:}>;".format(to_cpp_type(dtype)))
+    output += NAMESPACE_CLOSE
+    return "\n".join(output)
+
+
+if __name__ == "__main__":
+    genfile = __file__.replace(".generate.py", "")
+    with open(genfile, "w") as f:
+        f.write(generate())

@@ -4,9 +4,8 @@ Tree-like parameter map for automatically passing parameters from
 high-level to low-level conveniently.
 
 ## Design principles
-- All data is stored in the `PamMap` objects is a copy
-- The user either gets copies or views(references) to the data
-  stored in the `PamMap`.
+- Use `PamMap` as simple hierachical data format
+- Single numbers or strings are stored as a copy, lists and larger blocks as views.
 - The focus is not on speed, but convenience
 
 ## Goal

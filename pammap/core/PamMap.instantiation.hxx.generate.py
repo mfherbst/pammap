@@ -21,13 +21,28 @@
 ##
 ## ---------------------------------------------------------------------
 
-import testmodule
-import numpy as np
 
-a = np.array([1, 2, 5])
+from common import licence_header_cpp, NAMESPACE_OPEN, NAMESPACE_CLOSE, to_cpp_type
+import constants
 
-pmap = testmodule.PamMap()
-pmap.update_integer("/integer", 4)
-pmap.update_integer_array("/array", a)
 
-testmodule.print_keys(pmap)
+def generate():
+    output = licence_header_cpp(__file__)
+    output += ["#include \"typedefs.hxx\""]
+
+    output += NAMESPACE_OPEN
+    for dtype in constants.DTYPES:
+        output.append("template const {0:}& PamMap::at<{0:}>("
+                      "const std::string& key, const {0:}& default_value) "
+                      "const;".format(to_cpp_type(dtype)))
+        output.append("template {0:}& PamMap::at<{0:}>(const std::string& key, "
+                      "{0:}& default_value);".format(to_cpp_type(dtype)))
+    output += NAMESPACE_CLOSE
+
+    return "\n".join(output)
+
+
+if __name__ == "__main__":
+    genfile = __file__.replace(".generate.py", "")
+    with open(genfile, "w") as f:
+        f.write(generate())

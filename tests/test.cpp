@@ -25,20 +25,23 @@ namespace pammap {
 namespace test {
 
 TEST_CASE("Dummy test") {
+  std::vector<Integer> list{1, 2, 3};
+  ArrayView<Integer> view(list);
+
   PamMap map{
         {"a/b/c", 0},
         {"cde", 4},
         {"d/ou/ble", 2},
-        {"test/list", {1, 2, 3}},
+        {"test/list", view},
   };
 
   PamMap test = map.submap("test");
-  test.update("list2", DataBlock<Integer>{1, 2, 3});
+  test.update("list2", view);
 
   for (auto& kv : map) {
     if (kv.key() == "/test/list" || kv.key() == "/test/list2") {
       std::cout << kv.key() << " " << kv.type_name() << " = "
-                << kv.value<DataBlock<Integer>>().size() << std::endl;
+                << kv.value<ArrayView<Integer>>().shape[0] << std::endl;
     } else {
       std::cout << kv.key() << " " << kv.type_name() << " = " << kv.value<Integer>()
                 << std::endl;

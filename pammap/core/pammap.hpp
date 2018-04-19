@@ -18,7 +18,7 @@
 //
 
 #pragma once
-#include "DataBlock.hpp"
+#include "ArrayView.hpp"
 #include "PamMap.hpp"
 #include "any.hpp"
 #include "typedefs.hxx"

@@ -19,18 +19,18 @@
 //
 
 %{
-#include "DataBlock.hpp"
+#include "ArrayView.hpp"
 #include "typedefs.hxx"
 %}
 
 %include "numpy.i"
 
 /*
- *  DataBlock typemaps
+ *  ArrayView typemaps
  */
-%define %datablock_typemaps(DATA_TYPE, DATA_TYPECODE)
+%define %arrayview_typemaps(DATA_TYPE, DATA_TYPECODE)
 %typecheck(SWIG_TYPECHECK_DOUBLE_ARRAY,fragment="NumPy_Macros")
-  (DATA_TYPE DATAVIEW)
+  (DATA_TYPE ARRAYVIEW)
 {
   $1 = is_array($input) && PyArray_EquivTypenums(array_type($input),
                                                  DATA_TYPECODE);
@@ -39,7 +39,7 @@
 /** Typemap to pass a view to a numpy array to C++
   */
 %typemap(in,fragment="NumPy_Fragments")
-  (DATA_TYPE DATAVIEW)
+  (DATA_TYPE ARRAYVIEW)
   (PyArrayObject* array=NULL)
 {
   array = obj_to_array_no_conversion($input, DATA_TYPECODE);
@@ -47,42 +47,53 @@
       || !require_native(array)) SWIG_fail;
 
   std::vector<size_t> shape(array_numdims(array));
+  std::vector<size_t> strides(array_numdims(array));
   for (int i=0; i < array_numdims(array); ++i) {
-    shape[i] = array_size(array,i);
+    shape[i] = array_size(array, i);
+    strides[i] = array_stride(array, i);
   }
 
-  // TODO Assign strides as well!
-  $1 = DATA_TYPE(
-           static_cast<typename DATA_TYPE::value_type*>(array_data(array)),
-           shape,
-           pammap::Memory::ViewOnly);
-
+  $1 = DATA_TYPE();
+  $1.data = static_cast<typename DATA_TYPE::value_type*>(array_data(array));
+  $1.shape = std::move(shape);
+  $1.strides = std::move(strides);
+  $1.owner = static_cast<void*>(array);
+  $1.owner_type = pammap::ArrayViewBase::NUMPY;
 }
 
 %typemap(out,fragment="NumPy_Fragments")
   (DATA_TYPE)
-  (PyObject* array = NULL)
+  (PyArrayObject* array = NULL)
 {
-  std::vector<npy_intp> np_shape($1.shape().size());
-  for (size_t i = 0; i < np_shape.size(); ++i) {
-    np_shape[i] = static_cast<npy_intp>($1.shape()[i]);
+  // Need to be build from numpy
+  if (!$1.owner || $1.owner_type != pammap::ArrayViewBase::NUMPY) {
+    SWIG_fail;
   }
-  array = PyArray_SimpleNew(np_shape.size(), np_shape.data(), DATA_TYPECODE);
-  if (!array) SWIG_fail;
+  PyObject* obj = static_cast<PyObject*>($1.owner);
+  array = obj_to_array_no_conversion(obj, DATA_TYPECODE);
 
-  std::copy($1.begin(), $1.end(),
-            static_cast<typename DATA_TYPE::value_type*>(array_data(array)));
+  // Need to be a proper numpy array
+  if (!array || !require_native(array)) SWIG_fail;
 
+  // Shape and strides need to agree
+  for (int i=0; i < array_numdims(array); ++i) {
+    if ($1.shape[i] != array_size(array, i) ||
+        $1.strides[i] != array_size(array, i)) {
+      SWIG_fail;
+    }
+  }
+
+  // All fine, append as output
   $result = SWIG_Python_AppendOutput($result,(PyObject*)array);
 }
 %enddef
 
 //
-// Do not use the bare *.i.template file, use the generated DataBlock.i
+// Do not use the bare *.i.template file, use the generated ArrayView.i
 // files instead.
 // In the full version the instantiation typemaps will be added here.
 //
 
-%datablock_typemaps(pammap::DataBlock<pammap::Complex>, NPY_CDOUBLE)
-%datablock_typemaps(pammap::DataBlock<pammap::Integer>, NPY_LONGLONG)
-%datablock_typemaps(pammap::DataBlock<pammap::Float>, NPY_DOUBLE)
+%arrayview_typemaps(pammap::ArrayView<pammap::Complex>, NPY_CDOUBLE)
+%arrayview_typemaps(pammap::ArrayView<pammap::Integer>, NPY_LONGLONG)
+%arrayview_typemaps(pammap::ArrayView<pammap::Float>, NPY_DOUBLE)

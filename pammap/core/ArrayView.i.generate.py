@@ -21,13 +21,27 @@
 ##
 ## ---------------------------------------------------------------------
 
-import testmodule
-import numpy as np
+from common import to_cpp_blocktype
+import constants
 
-a = np.array([1, 2, 5])
 
-pmap = testmodule.PamMap()
-pmap.update_integer("/integer", 4)
-pmap.update_integer_array("/array", a)
+def generate():
+    with open("ArrayView.i.template") as f:
+        original = f.readlines()
 
-testmodule.print_keys(pmap)
+    output = [""]
+    for dtype in constants.DTYPES:
+        if dtype not in constants.python.underlying_numpy_type:
+            continue
+        nptype = constants.python.underlying_numpy_type[dtype]
+        output += [
+            "%arrayview_typemaps(" + to_cpp_blocktype(dtype, full=True) +
+            ", " + nptype + ")"
+        ]
+    return "".join(original) + "\n".join(output)
+
+
+if __name__ == "__main__":
+    genfile = __file__.replace(".generate.py", "")
+    with open(genfile, "w") as f:
+        f.write(generate())
