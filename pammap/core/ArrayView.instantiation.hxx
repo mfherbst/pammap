@@ -30,5 +30,6 @@ template class ArrayView<Complex>;
 template class ArrayView<Integer>;
 template class ArrayView<Float>;
 template class ArrayView<String>;
+template class ArrayView<Bool>;
 
 } // namespace pammap

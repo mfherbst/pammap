@@ -35,5 +35,6 @@ typedef std::complex<double> Complex;
 typedef int64_t Integer;
 typedef double Float;
 typedef std::string String;
+typedef bool Bool;
 
 } // namespace pammap

@@ -18,6 +18,7 @@
 //
 
 #pragma once
+#include <type_traits>
 #include <vector>
 
 namespace pammap {
@@ -96,10 +97,20 @@ struct ArrayView : public ArrayViewBase {
   T* data = nullptr;
 
   ArrayView() = default;
-  ArrayView(std::vector<T>& vector)
-        : ArrayViewBase{{vector.size()}, {1}}, data{vector.data()} {}
   ArrayView(T* data_, std::vector<size_t> shape_, std::vector<size_t> strides_)
         : ArrayViewBase{shape_, strides_}, data(data_) {}
+
+  /** Constructor from a std::vector, which is only active for a non-bool std::vector
+   *
+   * The reason for explicitly excluding std::vector<bool> is that the memory layout is
+   * different.
+   *
+   * TODO Think if there is a nicer way to achieve this.
+   */
+  template <typename U = T>
+  ArrayView(std::vector<typename std::enable_if<!std::is_same<U, bool>::value, T>::type>&
+                  vector)
+        : ArrayViewBase{{vector.size()}, {1}}, data{vector.data()} {}
 
   /** Compare two ArrayView objects for equality.
    *

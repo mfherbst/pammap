@@ -47,6 +47,10 @@ struct IsSupportedType<Complex> : public std::true_type {};
 template<>
 struct IsSupportedType<String> : public std::true_type {};
 
+/** Specialisation of IsSupportedType<T> for Bool.*/
+template<>
+struct IsSupportedType<Bool> : public std::true_type {};
+
 /** Specialisation of IsSupportedType<T> for ArrayView<Integer>.*/
 template<>
 struct IsSupportedType<ArrayView<Integer>> : public std::true_type {};
@@ -62,6 +66,10 @@ struct IsSupportedType<ArrayView<Complex>> : public std::true_type {};
 /** Specialisation of IsSupportedType<T> for ArrayView<String>.*/
 template<>
 struct IsSupportedType<ArrayView<String>> : public std::true_type {};
+
+/** Specialisation of IsSupportedType<T> for ArrayView<Bool>.*/
+template<>
+struct IsSupportedType<ArrayView<Bool>> : public std::true_type {};
 
 
 } // namespace pammap

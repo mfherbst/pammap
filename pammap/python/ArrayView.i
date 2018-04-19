@@ -97,3 +97,4 @@
 %arrayview_typemaps(pammap::ArrayView<pammap::Complex>, NPY_CDOUBLE)
 %arrayview_typemaps(pammap::ArrayView<pammap::Integer>, NPY_LONGLONG)
 %arrayview_typemaps(pammap::ArrayView<pammap::Float>, NPY_DOUBLE)
+%arrayview_typemaps(pammap::ArrayView<pammap::Bool>, NPY_BOOL)

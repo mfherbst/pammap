@@ -34,5 +34,7 @@ template const Float& PamMap::at<Float>(const std::string& key, const Float& def
 template Float& PamMap::at<Float>(const std::string& key, Float& default_value);
 template const String& PamMap::at<String>(const std::string& key, const String& default_value) const;
 template String& PamMap::at<String>(const std::string& key, String& default_value);
+template const Bool& PamMap::at<Bool>(const std::string& key, const Bool& default_value) const;
+template Bool& PamMap::at<Bool>(const std::string& key, Bool& default_value);
 
 } // namespace pammap

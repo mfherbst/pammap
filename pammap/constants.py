@@ -26,7 +26,8 @@ DTYPES = [
     "complex",
     "integer",
     "float",
-    "string"
+    "string",
+    "bool",
 ]
 
 
@@ -41,7 +42,8 @@ class cpp:
         "integer": "int64_t",
         "float": "double",
         "complex": "std::complex<double>",
-        "string": "std::string"
+        "string": "std::string",
+        "bool": "bool",
     }
 
 
@@ -52,6 +54,7 @@ class python:
         "float": "float",
         "complex": "complex",
         "string": "str",
+        "bool": "bool",
     }
 
     # How the conceptual dtypes are represented in numpy
@@ -59,4 +62,5 @@ class python:
         "integer": "NPY_LONGLONG",
         "float": "NPY_DOUBLE",
         "complex": "NPY_CDOUBLE",
+        "bool": "NPY_BOOL",
     }

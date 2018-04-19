@@ -59,6 +59,9 @@ class PamMapValue : public any {
   /** Construction from String */
   PamMapValue(String val) : any(std::move(val)) {}
 
+  /** Construction from Bool */
+  PamMapValue(Bool val) : any(std::move(val)) {}
+
   /** Construction from ArrayView<Integer> */
   PamMapValue(ArrayView<Integer> val) : any(std::move(val)) {}
 
@@ -70,6 +73,9 @@ class PamMapValue : public any {
 
   /** Construction from ArrayView<String> */
   PamMapValue(ArrayView<String> val) : any(std::move(val)) {}
+
+  /** Construction from ArrayView<Bool> */
+  PamMapValue(ArrayView<Bool> val) : any(std::move(val)) {}
 
   //
   // The int type gets special treatment because it is the default for raw numbers
