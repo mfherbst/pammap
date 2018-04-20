@@ -19,6 +19,7 @@
 
 #include "ArrayView.hpp"
 #include "exceptions.hpp"
+#include <algorithm>
 #include <functional>
 #include <iostream>
 #include <numeric>
@@ -84,7 +85,7 @@ bool ArrayView<T>::operator==(const ArrayView& other) const {
 }
 
 template <typename T>
-ArrayView<T> ArrayView<T>::slice_view(std::initializer_list<Slice> idcs) const {
+ArrayView<T> ArrayView<T>::slice_view(std::initializer_list<Slice> /*idcs*/) const {
   // Check that number of slices in initialiser list fits number of dimensions
 
   // Compute new data pointer

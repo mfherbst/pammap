@@ -50,7 +50,7 @@ matrix:
           sources: *def_sources
           packages:
             - *def_packages
-            - &clang_newest [ clang-5.0, libc++-dev, llvm-5.0, clang-tidy-5.0 ]
+            - &clang_newest [ libstdc++-4.9-dev, clang-5.0, libc++-dev, llvm-5.0, clang-tidy-5.0 ]
       compiler: clang
       env: CC_COMP="clang-5.0" CXX_COMP="clang++-5.0"
     #
