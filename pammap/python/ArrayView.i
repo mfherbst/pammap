@@ -47,7 +47,7 @@
       || !require_native(array)) SWIG_fail;
 
   std::vector<size_t> shape(array_numdims(array));
-  std::vector<size_t> strides(array_numdims(array));
+  std::vector<ptrdiff_t> strides(array_numdims(array));
   const size_t typebytes = sizeof(DATA_TYPE::value_type);
   for (int i=0; i < array_numdims(array); ++i) {
     shape[i] = array_size(array, i);
@@ -66,20 +66,34 @@
 {
   // Need to be build from numpy
   if (!$1.base() || $1.base_kind() != pammap::ArrayViewBase::NUMPY) {
-    SWIG_fail;
+    PyErr_SetString(PyExc_RuntimeError,
+                    "Cannot return ArrayView object, which is not originating from "
+                    "a numpy array.");
+    return NULL;
   }
   PyObject* obj = static_cast<PyObject*>($1.base());
   array = obj_to_array_no_conversion(obj, DATA_TYPECODE);
 
   // Need to be a proper numpy array
-  if (!array || !require_native(array)) SWIG_fail;
+  if (!array || !require_native(array)) {
+    PyErr_SetString(PyExc_RuntimeError,
+                    "Cannot return ArrayView object, where the base() is not a valid "
+                    "numpy array.");
+    return NULL;
+  }
 
   // Shape and strides need to agree
   const size_t typebytes = sizeof(DATA_TYPE::value_type);
   for (int i=0; i < array_numdims(array); ++i) {
-    if ($1.shape()[i] != array_size(array, i) ||
-        $1.strides()[i] * typebytes != array_size(array, i)) {
-      SWIG_fail;
+    if ($1.shape()[i] != array_size(array, i)) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Cannot return ArrayView object, where shape has been changed.");
+      return NULL;
+    }
+    if ($1.strides()[i] * typebytes != array_stride(array, i)) {
+      PyErr_SetString(PyExc_RuntimeError,
+                      "Cannot return ArrayView object, where strides have been changed.");
+      return NULL;
     }
   }
 

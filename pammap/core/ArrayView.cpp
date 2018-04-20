@@ -25,13 +25,19 @@
 
 namespace pammap {
 
-ArrayViewBase::ArrayViewBase(std::vector<size_t> shape_, std::vector<size_t> strides_)
-      : m_shape(shape_), m_strides(strides_) {
-  pammap_throw(shape_.size() == strides_.size(), ValueError,
-               "Size of shape vector (== " + std::to_string(shape_.size()) +
+ArrayViewBase::ArrayViewBase(std::vector<size_t> shape, std::vector<ptrdiff_t> strides)
+      : m_shape(shape), m_strides(strides) {
+  pammap_throw(shape.size() == strides.size(), ValueError,
+               "Size of shape vector (== " + std::to_string(shape.size()) +
                      ") does not agree with the size of the strides vector "
                      "(== " +
-                     std::to_string(strides_.size()) + ").");
+                     std::to_string(strides.size()) + ").");
+
+  if (strides.size() > 0) {
+    m_unit = *std::min_element(
+          strides.begin(), strides.end(),
+          [](ptrdiff_t a, ptrdiff_t b) { return std::abs(a) < std::abs(b); });
+  }
 
   m_size =
         std::accumulate(m_shape.begin(), m_shape.end(), 1ul, std::multiplies<size_t>{});
@@ -48,19 +54,19 @@ void ArrayViewBase::reset_base() {
 }
 
 bool ArrayViewBase::is_fortran_contiguous() const {
-  size_t acc = 1;
+  ptrdiff_t acc = 1;
   for (size_t i = 0; i < ndim(); ++i) {
     if (m_strides[i] != acc) return false;
-    acc *= m_shape[i];
+    acc *= static_cast<ptrdiff_t>(m_shape[i]);
   }
   return true;
 }
 
 bool ArrayViewBase::is_c_contiguous() const {
-  size_t acc = 1;
+  ptrdiff_t acc = 1;
   for (size_t i = 0; i < ndim(); ++i) {
     if (m_strides[ndim() - i - 1] != acc) return false;
-    acc *= m_shape[ndim() - i - 1];
+    acc *= static_cast<ptrdiff_t>(m_shape[ndim() - i - 1]);
   }
   return true;
 }
@@ -70,9 +76,9 @@ bool ArrayView<T>::operator==(const ArrayView& other) const {
   if (m_size != other.m_size) return false;
   if (m_shape != other.m_shape) return false;
   if (m_strides != other.m_strides) return false;
-  if (data == other.data) return true;
+  if (m_data == other.m_data) return true;
   for (size_t i = 0; i < m_size; ++i) {
-    if (data[i] != other.data[i]) return false;
+    if (m_data[i] != other.m_data[i]) return false;
   }
   return true;
 }

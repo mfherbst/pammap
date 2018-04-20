@@ -24,13 +24,13 @@
 namespace pammap {
 namespace tests {
 
-TEST_CASE("ArrayView tests", "[datablock]") {
+TEST_CASE("ArrayView tests", "[array]") {
   typedef double value_type;
 
   SECTION("Correct dimensionality.") {
     std::vector<value_type> data{1, 2, 3, 4};
     std::vector<size_t> shape{2, 2};
-    std::vector<size_t> strides{1, 2};
+    std::vector<ptrdiff_t> strides{1, 2};
 
     ArrayView<value_type> av{data.data(), shape, strides};
     REQUIRE(av.size() == data.size());
@@ -40,7 +40,7 @@ TEST_CASE("ArrayView tests", "[datablock]") {
     auto construct = [] {
       std::vector<value_type> data{1, 2, 3, 4};
       std::vector<size_t> shape{2};
-      std::vector<size_t> strides{1, 2};
+      std::vector<ptrdiff_t> strides{1, 2};
 
       ArrayView<value_type> av(data.data(), shape, strides);
     };
@@ -51,8 +51,8 @@ TEST_CASE("ArrayView tests", "[datablock]") {
   SECTION("Check is_contiguous functions") {
     std::vector<value_type> data(1000, 1);
     std::vector<size_t> shape{2, 50, 10};
-    std::vector<size_t> c_strides{500, 10, 1};
-    std::vector<size_t> fortran_strides{1, 2, 100};
+    std::vector<ptrdiff_t> c_strides{500, 10, 1};
+    std::vector<ptrdiff_t> fortran_strides{1, 2, 100};
 
     ArrayView<value_type> ac{data.data(), shape, c_strides};
     ArrayView<value_type> af{data.data(), shape, fortran_strides};
