@@ -36,7 +36,7 @@ env:
 addons:
   apt:
     sources: &def_sources
-      - ubuntu-toolchain-r-test     # libstdc++-4.9-dev (gcc 4.8's libstdc++ is buggy)
+      - ubuntu-toolchain-r-test     # g++ 7 and newer C++ standard library
       - llvm-toolchain-trusty-5.0   # clang-5.0
     packages: &def_packages
       - ninja-build
