@@ -20,5 +20,6 @@
 #pragma once
 #include "ArrayView.hpp"
 #include "PamMap.hpp"
+#include "Slice.hpp"
 #include "any.hpp"
 #include "typedefs.hxx"

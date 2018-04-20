@@ -24,6 +24,7 @@ include_directories(..)
 
 add_executable(test_pammap_core
 	test.cpp
+	SliceTests.cpp
 	ArrayViewTests.cpp
 	PamMapTests.cpp
 	main.cpp
