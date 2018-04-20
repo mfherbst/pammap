@@ -20,12 +20,24 @@
 #include "ArrayView.hpp"
 #include "exceptions.hpp"
 #include <catch2/catch.hpp>
+#include <numeric>
 
 namespace pammap {
 namespace tests {
 
 TEST_CASE("ArrayView tests", "[array]") {
   typedef double value_type;
+
+  std::vector<value_type> data(1000);
+  std::iota(data.begin(), data.end(), value_type(0));
+  std::vector<size_t> shape{2, 50, 10};
+  std::vector<ptrdiff_t> cc_strides{500, 10, 1};
+  std::vector<ptrdiff_t> fortran_strides{1, 2, 100};
+
+  ArrayView<value_type> cc{data.data(), shape, cc_strides};
+  ArrayView<value_type> fortran{data.data(), shape, fortran_strides};
+  const ArrayView<value_type> cc_const(cc);
+  const ArrayView<value_type> fortran_const(fortran);
 
   SECTION("Correct dimensionality.") {
     std::vector<value_type> data{1, 2, 3, 4};
@@ -48,24 +60,65 @@ TEST_CASE("ArrayView tests", "[array]") {
     REQUIRE_THROWS_AS(construct(), ValueError);
   }
 
-  SECTION("Check is_contiguous functions") {
-    std::vector<value_type> data(1000, 1);
-    std::vector<size_t> shape{2, 50, 10};
-    std::vector<ptrdiff_t> c_strides{500, 10, 1};
-    std::vector<ptrdiff_t> fortran_strides{1, 2, 100};
-
-    ArrayView<value_type> ac{data.data(), shape, c_strides};
-    ArrayView<value_type> af{data.data(), shape, fortran_strides};
+  SECTION("is_contiguous functions with unit stride") {
     ArrayView<value_type> aod{data.data(), {1000}, {1}};
 
-    CHECK(af.is_fortran_contiguous());
-    CHECK_FALSE(af.is_c_contiguous());
+    CHECK(fortran.is_fortran_contiguous());
+    CHECK_FALSE(fortran.is_c_contiguous());
 
-    CHECK_FALSE(ac.is_fortran_contiguous());
-    CHECK(ac.is_c_contiguous());
+    CHECK_FALSE(cc.is_fortran_contiguous());
+    CHECK(cc.is_c_contiguous());
 
     CHECK(aod.is_fortran_contiguous());
     CHECK(aod.is_c_contiguous());
+  }
+
+  SECTION("is_contiguous with non-unit stride") {
+    // TODO
+  }
+
+  SECTION("Operator[] with unit stride") {
+    CHECK(cc.size() == 1000);
+    CHECK(fortran.size() == 1000);
+#ifndef NDEBUG
+    CHECK_THROWS_AS(cc[1000], IndexError);
+    CHECK_THROWS_AS(fortran[1000], IndexError);
+#endif  // NDEBUG
+
+    // Check the C-ordered array (row-major)
+    bool c_order_agrees = true;
+    for (size_t i = 0, cnt = 0; i < shape[0]; ++i) {
+      for (size_t j = 0; j < shape[1]; ++j) {
+        const size_t ij = i * shape[1] + j;
+        for (size_t k = 0; k < shape[2]; ++k, ++cnt) {
+          const size_t ijk = ij * shape[2] + k;
+          if (data[cnt] != cc[ijk]) c_order_agrees = false;
+          if (data[cnt] != cc_const[ijk]) c_order_agrees = false;
+        }
+      }
+    }
+    CHECK(c_order_agrees);
+
+    // Check the Fortran-ordered array (column-major)
+    bool f_order_agrees = true;
+    for (size_t k = 0, cnt = 0; k < shape[2]; ++k) {
+      for (size_t j = 0; j < shape[1]; ++j) {
+        for (size_t i = 0; i < shape[0]; ++i, ++cnt) {
+          const size_t ijk = i + shape[0] * j + shape[0] * shape[1] * k;
+          if (data[cnt] != fortran[ijk]) f_order_agrees = false;
+          if (data[cnt] != fortran_const[ijk]) f_order_agrees = false;
+        }
+      }
+    }
+    CHECK(f_order_agrees);
+  }
+
+  SECTION("Operator[] with non-unit stride") {
+    // TODO
+  }
+
+  SECTION("Setting values using operator[]") {
+    // TODO
   }
 }
 
