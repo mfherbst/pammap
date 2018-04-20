@@ -37,6 +37,9 @@
   } catch (const pammap::KeyError& e) {
     PyErr_SetString(PyExc_KeyError, e.key.c_str());
     return NULL;
+  } catch (const pammap::IndexError& e) {
+    PyErr_SetString(PyExc_IndexError, e.extra.c_str());
+    return NULL;
   } catch (const pammap::PamMapError& e) {
     PyErr_SetString(PyExc_RuntimeError, e.what());
     return NULL;

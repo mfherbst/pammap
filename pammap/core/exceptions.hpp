@@ -34,8 +34,7 @@ struct AssertionError : public PamMapError {
 };
 
 /** Error thrown when a dict or a pammap encounters an unknown key */
-class KeyError : public PamMapError {
- public:
+struct KeyError : public PamMapError {
   KeyError(pammap_error_constructor_args, std::string key_);
   std::string key;
 };
@@ -61,6 +60,9 @@ declare_description_error(InvalidStateError);
 
 /** Error to flag that something is not yet implemented. */
 declare_description_error(NotImplementedError);
+
+/** Error to flag that and index is out of range */
+declare_description_error(IndexError);
 
 #undef declare_description_error
 #undef pammap_error_constructor_args

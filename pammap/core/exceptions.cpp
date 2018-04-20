@@ -45,6 +45,7 @@ define_description_error(InvalidStateError)
 define_description_error(NotImplementedError)
 define_description_error(TypeError)
 define_description_error(ValueError)
+define_description_error(IndexError)
 /* clang-format on */
 
 }  // namespace pammap
