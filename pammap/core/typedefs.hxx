@@ -22,6 +22,7 @@
 // typedefs.hxx.generate.py
 // Instead edit the script and rerun it.
 //
+#pragma once
 #include <complex>
 #include <string>
 #include <cstdint>

@@ -27,6 +27,7 @@ import constants
 
 def generate():
     output = licence_header_cpp(__file__)
+    output.append("#pragma once")
     for hdr in constants.cpp.headers:
         output.append("#include " + hdr)
 
