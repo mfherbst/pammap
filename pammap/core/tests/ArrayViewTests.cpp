@@ -120,6 +120,8 @@ TEST_CASE("ArrayView tests", "[array]") {
   SECTION("Setting values using operator[]") {
     // TODO
   }
+
+  // TODO test slice function
 }
 
 }  // namespace tests

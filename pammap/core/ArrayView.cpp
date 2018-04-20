@@ -83,6 +83,17 @@ bool ArrayView<T>::operator==(const ArrayView& other) const {
   return true;
 }
 
+template <typename T>
+ArrayView<T> ArrayView<T>::slice_view(std::initializer_list<Slice> idcs) const {
+  // Check that number of slices in initialiser list fits number of dimensions
+
+  // Compute new data pointer
+  // Compute new strides
+  // Compute new shapes
+
+  pammap_throw(false, NotImplementedError, "slice_view not implemented");
+}
+
 }  // namespace pammap
 
 #include "ArrayView.instantiation.hxx"

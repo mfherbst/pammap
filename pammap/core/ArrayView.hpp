@@ -153,6 +153,8 @@ struct ArrayView : public ArrayViewBase {
    * \note For simplicity const ArrayView objects also return a
    *       *writable*, i.e. non-const ArrayView if sliced.
    * */
+  ArrayView slice(std::initializer_list<Slice> idcs) { return slice_view(idcs); }
+  ArrayView slice(std::initializer_list<Slice> idcs) const { return slice_view(idcs); }
 
   /** Compare two ArrayView objects for equality.
    *
@@ -172,6 +174,9 @@ struct ArrayView : public ArrayViewBase {
 
   /** The pointer to the end of the data block */
   T* m_data_end = nullptr;
+
+  /** Helper function to make a slice */
+  ArrayView slice_view(std::initializer_list<Slice> idcs) const;
 };
 
 //
