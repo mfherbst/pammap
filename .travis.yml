@@ -1,0 +1,77 @@
+## ---------------------------------------------------------------------
+##
+## Copyright (C) 2018 by Michael F. Herbst and contributors
+##
+## This file is part of pammap.
+##
+## pammap is free software: you can redistribute it and/or modify
+## it under the terms of the GNU Lesser General Public License as published
+## by the Free Software Foundation, either version 3 of the License, or
+## (at your option) any later version.
+##
+## pammap is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU Lesser General Public License for more details.
+##
+## You should have received a copy of the GNU Lesser General Public License
+## along with pammap. If not, see <http://www.gnu.org/licenses/>.
+##
+## ---------------------------------------------------------------------
+
+language: cpp
+sudo: false
+
+branches:
+  except:
+    - dev
+    - /^dev-.*$/
+    - /^dev_.*$/
+
+env:
+  global:
+    # Use two threads in parallel
+    - CORES=2
+
+addons:
+  apt:
+    sources: &def_sources
+      - ubuntu-toolchain-r-test     # libstdc++-4.9-dev (gcc 4.8's libstdc++ is buggy)
+      - llvm-toolchain-trusty-5.0   # clang-5.0
+    packages: &def_packages
+      - ninja-build
+
+matrix:
+  include:
+    #
+    # Clang 5.0 (has c++17)
+    - addons:
+        apt:
+          sources: *def_sources
+          packages:
+            - *def_packages
+            - &clang_newest [ clang-5.0, libc++-dev, llvm-5.0, clang-tidy-5.0 ]
+      compiler: clang
+      env: CC_COMP="clang-5.0" CXX_COMP="clang++-5.0"
+    #
+    # gcc-7 (has c++17)
+    - addons:
+        apt:
+          sources: *def_sources
+          packages:
+            - *def_packages
+            - g++-7
+      compiler: gcc
+      env: CC_COMP="gcc-7" CXX_COMP="g++-7"
+
+script:
+  - cmake --version
+  - ninja --version
+  #
+  # Configure and build.
+  - mkdir ${TRAVIS_BUILD_DIR}/build && cd ${TRAVIS_BUILD_DIR}/build
+  - cmake -DCMAKE_CXX_COMPILER=${CXX_COMP} -DCMAKE_C_COMPILER=${CC_COMP}
+           -DPAMMAP_BUILD_EXAMPLES=OFF
+           -DPAMMAP_ENABLE_TESTS=ON ..
+  - cmake --build  . --target all -- -j ${CORES}
+  - ./pammap/core/tests/test_pammap_core
