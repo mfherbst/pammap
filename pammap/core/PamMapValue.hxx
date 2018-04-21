@@ -81,18 +81,18 @@ class PamMapValue : public any {
   // The int type gets special treatment because it is the default for raw numbers
   //
   /** \brief Make an PamMapValue out of an int. Behaves like a PamMapValue
-    *        containing an INTEGER type */
+   *         containing an INTEGER type */
   PamMapValue(int i) : PamMapValue(static_cast<Integer>(i)) {}
 
   //
   // Same for const char*
   //
   /** \brief Make an PamMapValue out of a const char*.
-    * This behaves like the equivalent GenMapValue of a  std::string */
+   *  This behaves like the equivalent GenMapValue of a std::string */
   PamMapValue(const char* s) : PamMapValue(std::string(s)) {}
 
   /** Return the demangled typename of the type of the internal object. */
   std::string type_name() const;
 };
 
-} // namespace pammap
+}  // namespace pammap

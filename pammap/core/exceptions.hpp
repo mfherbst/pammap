@@ -35,7 +35,7 @@ struct AssertionError : public PamMapError {
 
 /** Error thrown when a dict or a pammap encounters an unknown key */
 struct KeyError : public PamMapError {
-  KeyError(pammap_error_constructor_args, std::string key_);
+  KeyError(pammap_error_constructor_args, const std::string& key);
   std::string key;
 };
 
@@ -74,23 +74,24 @@ declare_description_error(IndexError);
 
 /** Assert a condition and if it evaluates to false, throw an AssertionError
  */
-#define pammap_assert(cond)                                                           \
-  {                                                                                   \
-    if (!(cond)) {                                                                    \
-      throw AssertionError("AssertionError", __FILE__, __LINE__, __PRETTY_FUNCTION__, \
-                           #cond);                                                    \
-    }                                                                                 \
+#define pammap_assert(cond)                                                       \
+  {                                                                               \
+    if (!(cond)) {                                                                \
+      throw AssertionError("AssertionError", __FILE__, __LINE__,                  \
+                           static_cast<const char*>(__PRETTY_FUNCTION__), #cond); \
+    }                                                                             \
   }
 
 /** Assert a condition and if it evaluates to false, throw the exception
  *  given as the second argument.
  */
-#define pammap_throw(cond, exception, ...)                                        \
-  {                                                                               \
-    if (!(cond)) {                                                                \
-      throw exception(#exception, __FILE__, __LINE__, __PRETTY_FUNCTION__, #cond, \
-                      __VA_ARGS__);                                               \
-    }                                                                             \
+#define pammap_throw(cond, exception, ...)                                  \
+  {                                                                         \
+    if (!(cond)) {                                                          \
+      throw exception(#exception, __FILE__, __LINE__,                       \
+                      static_cast<const char*>(__PRETTY_FUNCTION__), #cond, \
+                      __VA_ARGS__);                                         \
+    }                                                                       \
   }
 
 }  // namespace pammap

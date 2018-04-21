@@ -1,0 +1,4 @@
+# Put files, which should be ignored from clang tidy
+# here using the relative path from the root of the
+# git repository.
+examples/minimal/testmodule.cpp

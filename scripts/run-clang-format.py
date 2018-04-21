@@ -21,36 +21,31 @@
 ##
 ## ---------------------------------------------------------------------
 
-from common import licence_header_cpp, NAMESPACE_OPEN, NAMESPACE_CLOSE
-from common import make_supported_cpp_types
-import constants
+import argparse
+import common
+import os
+import subprocess
 
 
-def generate():
-    output = licence_header_cpp(__file__)
-    output += ["#include \"typedefs.hxx\""]
-    output += ["#include <type_traits>"]
+def main():
+    parser = argparse.ArgumentParser(
+        description="Run clang-format on all currently committed c++ files"
+    )
+    parser.add_argument("-clang-format", metavar="PATH", default="clang-format",
+                        help="Name or path of clang-format executable to use.")
+    args = parser.parse_args()
 
-    output += NAMESPACE_OPEN
-    output += [
-        "/** Is the type T supported by pammap for storage. */",
-        "template <typename T>",
-        "struct IsSupportedType : public std::false_type {};",
+    cpp_extensions = [".cpp", ".hpp", ".cxx", ".hxx", ".hh", ".cc", ".h", ".c"]
+    root = common.get_repo_root_path()
+    cpp_files = [
+        os.path.join(root, file) for file in common.list_committed_files()
+        if os.path.splitext(file)[1] in cpp_extensions
     ]
 
-    for cpptype in make_supported_cpp_types(constants.DTYPES):
-        output += [
-            "",
-            "/** Specialisation of IsSupportedType<T> for " + cpptype + ".*/",
-            "template <>",
-            "struct IsSupportedType<" + cpptype + "> : public std::true_type {};",
-        ]
-
-    output += NAMESPACE_CLOSE
-    return "\n".join(output)
+    commandline = [args.clang_format, "-style=file", "-i"]
+    for cfile in cpp_files:
+        subprocess.run(commandline + [cfile])
 
 
 if __name__ == "__main__":
-    genfile = __file__.replace(".generate.py", "")
-    with open(genfile, "w") as f:
-        f.write(generate())
+    main()

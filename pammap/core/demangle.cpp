@@ -30,7 +30,7 @@ std::string demangle(const char* mangled) {
 
   if (status == 0) {
     std::string ret(demangled);
-    free(demangled);
+    free(demangled);  // NOLINT
     return ret;
   }
   return std::string(mangled);

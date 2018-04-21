@@ -23,7 +23,7 @@
 
 
 from common import licence_header_cpp, NAMESPACE_OPEN, NAMESPACE_CLOSE
-from common import make_supported_cpp_types
+from common import make_supported_cpp_types, clang_format
 import constants
 
 
@@ -41,7 +41,7 @@ def generate():
 
     output += NAMESPACE_CLOSE
 
-    return "\n".join(output)
+    return clang_format("\n".join(output))
 
 
 if __name__ == "__main__":

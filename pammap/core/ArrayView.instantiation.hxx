@@ -32,4 +32,4 @@ template class ArrayView<Float>;
 template class ArrayView<String>;
 template class ArrayView<Bool>;
 
-} // namespace pammap
+}  // namespace pammap

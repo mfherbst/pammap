@@ -26,25 +26,40 @@
 
 namespace pammap {
 
-template const Integer& PamMap::at<Integer>(const std::string& key, const Integer& default_value) const;
+template const Integer& PamMap::at<Integer>(const std::string& key,
+                                            const Integer& default_value) const;
 template Integer& PamMap::at<Integer>(const std::string& key, Integer& default_value);
-template const Float& PamMap::at<Float>(const std::string& key, const Float& default_value) const;
+template const Float& PamMap::at<Float>(const std::string& key,
+                                        const Float& default_value) const;
 template Float& PamMap::at<Float>(const std::string& key, Float& default_value);
-template const Complex& PamMap::at<Complex>(const std::string& key, const Complex& default_value) const;
+template const Complex& PamMap::at<Complex>(const std::string& key,
+                                            const Complex& default_value) const;
 template Complex& PamMap::at<Complex>(const std::string& key, Complex& default_value);
-template const String& PamMap::at<String>(const std::string& key, const String& default_value) const;
+template const String& PamMap::at<String>(const std::string& key,
+                                          const String& default_value) const;
 template String& PamMap::at<String>(const std::string& key, String& default_value);
-template const Bool& PamMap::at<Bool>(const std::string& key, const Bool& default_value) const;
+template const Bool& PamMap::at<Bool>(const std::string& key,
+                                      const Bool& default_value) const;
 template Bool& PamMap::at<Bool>(const std::string& key, Bool& default_value);
-template const ArrayView<Integer>& PamMap::at<ArrayView<Integer>>(const std::string& key, const ArrayView<Integer>& default_value) const;
-template ArrayView<Integer>& PamMap::at<ArrayView<Integer>>(const std::string& key, ArrayView<Integer>& default_value);
-template const ArrayView<Float>& PamMap::at<ArrayView<Float>>(const std::string& key, const ArrayView<Float>& default_value) const;
-template ArrayView<Float>& PamMap::at<ArrayView<Float>>(const std::string& key, ArrayView<Float>& default_value);
-template const ArrayView<Complex>& PamMap::at<ArrayView<Complex>>(const std::string& key, const ArrayView<Complex>& default_value) const;
-template ArrayView<Complex>& PamMap::at<ArrayView<Complex>>(const std::string& key, ArrayView<Complex>& default_value);
-template const ArrayView<String>& PamMap::at<ArrayView<String>>(const std::string& key, const ArrayView<String>& default_value) const;
-template ArrayView<String>& PamMap::at<ArrayView<String>>(const std::string& key, ArrayView<String>& default_value);
-template const ArrayView<Bool>& PamMap::at<ArrayView<Bool>>(const std::string& key, const ArrayView<Bool>& default_value) const;
-template ArrayView<Bool>& PamMap::at<ArrayView<Bool>>(const std::string& key, ArrayView<Bool>& default_value);
+template const ArrayView<Integer>& PamMap::at<ArrayView<Integer>>(
+      const std::string& key, const ArrayView<Integer>& default_value) const;
+template ArrayView<Integer>& PamMap::at<ArrayView<Integer>>(
+      const std::string& key, ArrayView<Integer>& default_value);
+template const ArrayView<Float>& PamMap::at<ArrayView<Float>>(
+      const std::string& key, const ArrayView<Float>& default_value) const;
+template ArrayView<Float>& PamMap::at<ArrayView<Float>>(const std::string& key,
+                                                        ArrayView<Float>& default_value);
+template const ArrayView<Complex>& PamMap::at<ArrayView<Complex>>(
+      const std::string& key, const ArrayView<Complex>& default_value) const;
+template ArrayView<Complex>& PamMap::at<ArrayView<Complex>>(
+      const std::string& key, ArrayView<Complex>& default_value);
+template const ArrayView<String>& PamMap::at<ArrayView<String>>(
+      const std::string& key, const ArrayView<String>& default_value) const;
+template ArrayView<String>& PamMap::at<ArrayView<String>>(
+      const std::string& key, ArrayView<String>& default_value);
+template const ArrayView<Bool>& PamMap::at<ArrayView<Bool>>(
+      const std::string& key, const ArrayView<Bool>& default_value) const;
+template ArrayView<Bool>& PamMap::at<ArrayView<Bool>>(const std::string& key,
+                                                      ArrayView<Bool>& default_value);
 
-} // namespace pammap
+}  // namespace pammap

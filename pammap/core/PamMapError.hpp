@@ -26,8 +26,8 @@ namespace pammap {
 class PamMapError : public std::exception {
  public:
   /** Constructor */
-  PamMapError(const char* name_, const char* file_, int line_, const char* function_,
-              const char* failed_condition_, std::string extra);
+  PamMapError(const char* name, const char* file, int line, const char* function,
+              const char* failed_condition, std::string description);
 
   /** Default copy constructor */
   PamMapError(const PamMapError&) = default;

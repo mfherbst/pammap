@@ -24,7 +24,7 @@
 namespace pammap {
 
 TEST_CASE("Slice tests", "[slice]") {
-  typedef std::tuple<ptrdiff_t, ptrdiff_t, ptrdiff_t> idcs_t;
+  using idcs_t = std::tuple<ptrdiff_t, ptrdiff_t, ptrdiff_t>;
 
   SECTION("Test basic constructors.") {
     Slice def{};

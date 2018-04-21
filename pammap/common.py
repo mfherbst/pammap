@@ -24,6 +24,7 @@
 import os
 from datetime import date
 import constants
+import subprocess
 
 
 def clean_block(blocktext):
@@ -85,7 +86,7 @@ NAMESPACE_OPEN = [
 
 NAMESPACE_CLOSE = [
     "",
-    "} // namespace pammap",
+    "}  // namespace pammap",
     "",
 ]
 
@@ -115,3 +116,11 @@ def make_supported_cpp_types(dtypes):
         "ArrayView<" + cpptype + ">" for cpptype in supported_types
     ]
     return supported_types
+
+
+def clang_format(data):
+    """
+    Send a string through clang-format
+    """
+    return subprocess.check_output(["clang-format", "-style=file"],
+                                   input=data, universal_newlines=True)

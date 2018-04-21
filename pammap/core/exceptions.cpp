@@ -33,8 +33,8 @@ AssertionError::AssertionError(pammap_error_constructor_args)
                     "This is a bug and should not have happened. Please report it to the "
                     "developers along with details how you got this message.") {}
 
-KeyError::KeyError(pammap_error_constructor_args, std::string key_)
-      : PamMapError(pammap_error_constructor_vars, "Unknown key: " + key_), key(key_) {}
+KeyError::KeyError(pammap_error_constructor_args, const std::string& key)
+      : PamMapError(pammap_error_constructor_vars, "Unknown key: " + key), key(key) {}
 
 #define define_description_error(name)                               \
   name::name(pammap_error_constructor_args, std::string description) \

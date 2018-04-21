@@ -22,15 +22,15 @@
 
 namespace pammap {
 
-PamMapError::PamMapError(const char* name_, const char* file_, int line_,
-                         const char* function_, const char* failed_condition_,
-                         std::string extra_)
-      : name(name_),
-        file(file_),
-        line(line_),
-        function(function_),
-        failed_condition(failed_condition_),
-        extra(std::move(extra_)),
+PamMapError::PamMapError(const char* name, const char* file, int line,
+                         const char* function, const char* failed_condition,
+                         std::string description)
+      : name(name),
+        file(file),
+        line(line),
+        function(function),
+        failed_condition(failed_condition),
+        extra(std::move(description)),
         what_str{""} {
   try {
     std::ostringstream converter;

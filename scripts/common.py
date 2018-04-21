@@ -21,46 +21,17 @@
 ##
 ## ---------------------------------------------------------------------
 
-# The conceptual data types we support
-DTYPES = [
-    "complex",
-    "integer",
-    "float",
-    "string",
-    "bool",
-]
+import subprocess
 
 
-class cpp:
-    """Constants for C++"""
-
-    # Headers which are needed for representing the dtypes
-    headers = ["<complex>", "<cstdint>", "<string>"]
-
-    # How the conceptual dtypes are represented on C++
-    underlying_type = {
-        "integer": "int64_t",
-        "float": "double",
-        "complex": "std::complex<double>",
-        "string": "std::string",
-        "bool": "bool",
-    }
+def list_committed_files():
+    """List all files which are commited in the repo located
+    in directory"""
+    command = "git ls-tree --full-tree --name-only -r HEAD".split(" ")
+    output = subprocess.check_output(command, universal_newlines=True)
+    return [line for line in output.split("\n") if line != ""]
 
 
-class python:
-    # How the conceptual dtypes are represented in plain python
-    underlying_type = {
-        "integer": "int",
-        "float": "float",
-        "complex": "complex",
-        "string": "str",
-        "bool": "bool",
-    }
-
-    # How the conceptual dtypes are represented in numpy
-    underlying_numpy_type = {
-        "integer": "NPY_LONGLONG",
-        "float": "NPY_DOUBLE",
-        "complex": "NPY_CDOUBLE",
-        "bool": "NPY_BOOL",
-    }
+def get_repo_root_path():
+    return subprocess.check_output("git rev-parse --show-toplevel".split(" "),
+                                   universal_newlines=True).strip()
