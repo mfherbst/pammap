@@ -23,8 +23,8 @@
 
 namespace pammap {
 
-Slice::Slice(size_t begin_, size_t end_, ptrdiff_t step_)
-      : begin(begin_), end(end_), step(step_) {
+Slice::Slice(size_t begin, size_t end, ptrdiff_t step)
+      : begin(begin), end(end), step(step) {
   pammap_throw(step != 0, ValueError, "Step cannot be zero.");
 }
 
@@ -50,7 +50,7 @@ std::tuple<ptrdiff_t, ptrdiff_t, ptrdiff_t> Slice::indices(size_t len) const {
   }();
 
 #ifndef NDEBUG
-  const ptrdiff_t plen = static_cast<ptrdiff_t>(len);
+  const auto plen = static_cast<ptrdiff_t>(len);
   pammap_throw(pastlast <= plen || pastlast < -1, IndexError,
                "Slice " + to_string(*this) + " goes beyond the valid index range {0, " +
                      std::to_string(len) + "}.");
@@ -64,7 +64,7 @@ std::tuple<ptrdiff_t, ptrdiff_t, ptrdiff_t> Slice::indices(size_t len) const {
                "Slice " + to_string(*this) + " is empty.");
 
 #endif
-  return std::make_tuple(std::move(first), std::move(pastlast), step);
+  return std::make_tuple(first, pastlast, step);
 }
 
 std::ostream& operator<<(std::ostream& o, const Slice& s) {

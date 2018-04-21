@@ -42,8 +42,8 @@ TEST_CASE("PamMap tests", "[pammap]") {
   //
 
   // The expected demangled typenames for Integer and Float
-  const std::string Integer_typename = "long";
-  const std::string Float_typename   = "double";
+  const std::string integer_typename = "long";
+  const std::string float_typename   = "double";
 
   SECTION("Check typenames demangle as expected") {
     // if not this indicates that some tests might fail here
@@ -51,8 +51,8 @@ TEST_CASE("PamMap tests", "[pammap]") {
     // but of the type demangling.
     //
     //
-    CHECK(Integer_typename == demangle(typeid(Integer)));
-    CHECK(Float_typename == demangle(typeid(Float)));
+    CHECK(integer_typename == demangle(typeid(Integer)));
+    CHECK(float_typename == demangle(typeid(Float)));
   }
 
   //
@@ -461,7 +461,7 @@ TEST_CASE("PamMap tests", "[pammap]") {
     for (auto& kv : map.submap("ints")) {
       CHECK(kv.key() == "/" + std::to_string(iref));
       CHECK(kv.value<Integer>() == iref);
-      CHECK(kv.type_name() == Integer_typename);
+      CHECK(kv.type_name() == integer_typename);
       ++iref;
     }
 
@@ -470,7 +470,7 @@ TEST_CASE("PamMap tests", "[pammap]") {
     for (auto& kv : cmap.submap("ints")) {
       CHECK(kv.key() == "/" + std::to_string(iref));
       CHECK(kv.value<Integer>() == iref);
-      CHECK(kv.type_name() == Integer_typename);
+      CHECK(kv.type_name() == integer_typename);
       ++iref;
     }
 
@@ -479,7 +479,7 @@ TEST_CASE("PamMap tests", "[pammap]") {
     for (auto& kv : map.submap("doubles")) {
       CHECK(kv.key() == "/pip" + std::to_string(iref));
       CHECK(kv.value<Float>() == pi * iref);
-      CHECK(kv.type_name() == Float_typename);
+      CHECK(kv.type_name() == float_typename);
       ++iref;
     }
 
@@ -488,7 +488,7 @@ TEST_CASE("PamMap tests", "[pammap]") {
     for (auto& kv : cmap.submap("doubles")) {
       CHECK(kv.key() == "/pip" + std::to_string(iref));
       CHECK(kv.value<Float>() == pi * iref);
-      CHECK(kv.type_name() == Float_typename);
+      CHECK(kv.type_name() == float_typename);
       ++iref;
     }
   }  // Check accessor interface of the iterator

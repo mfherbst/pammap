@@ -26,7 +26,7 @@ namespace pammap {
 namespace tests {
 
 TEST_CASE("ArrayView tests", "[array]") {
-  typedef double value_type;
+  using value_type = double;
 
   std::vector<value_type> data(1000);
   std::iota(data.begin(), data.end(), value_type(0));
@@ -121,6 +121,7 @@ TEST_CASE("ArrayView tests", "[array]") {
     // TODO
   }
 
+  // TODO test equality operators
   // TODO test slice function
 }
 

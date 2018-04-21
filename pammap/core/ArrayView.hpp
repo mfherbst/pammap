@@ -41,7 +41,7 @@ class ArrayViewBase {
   };
 
   ArrayViewBase() = default;
-  ArrayViewBase(std::vector<size_t> shape_, std::vector<ptrdiff_t> strides_);
+  ArrayViewBase(const std::vector<size_t>& shape, std::vector<ptrdiff_t> strides);
 
   /** The number of elements */
   size_t size() const { return m_size; }

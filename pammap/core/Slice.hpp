@@ -36,9 +36,9 @@ struct Slice {
    * \param end_       Index *past* the last element
    * \param step_      Steps in which indices are to be increased.
    */
-  Slice(size_t begin_, size_t end_, ptrdiff_t step_);
-  Slice(size_t begin_, size_t end_) : begin(begin_), end(end_), step(1) {}
-  Slice(size_t begin_) : begin(begin_), end(begin_ + 1), step(1) {}
+  Slice(size_t begin, size_t end, ptrdiff_t step);
+  Slice(size_t begin, size_t end) : begin(begin), end(end), step(1) {}
+  Slice(size_t begin) : begin(begin), end(begin + 1), step(1) {}
   Slice() : begin(Auto), end(Auto), step(1) {}
   ///@}
 

@@ -26,7 +26,8 @@
 
 namespace pammap {
 
-ArrayViewBase::ArrayViewBase(std::vector<size_t> shape, std::vector<ptrdiff_t> strides)
+ArrayViewBase::ArrayViewBase(const std::vector<size_t>& shape,
+                             std::vector<ptrdiff_t> strides)
       : m_shape(shape), m_strides(strides) {
   pammap_throw(shape.size() == strides.size(), ValueError,
                "Size of shape vector (== " + std::to_string(shape.size()) +
@@ -34,7 +35,7 @@ ArrayViewBase::ArrayViewBase(std::vector<size_t> shape, std::vector<ptrdiff_t> s
                      "(== " +
                      std::to_string(strides.size()) + ").");
 
-  if (strides.size() > 0) {
+  if (!strides.empty()) {
     m_unit = *std::min_element(
           strides.begin(), strides.end(),
           [](ptrdiff_t a, ptrdiff_t b) { return std::abs(a) < std::abs(b); });
@@ -79,7 +80,7 @@ bool ArrayView<T>::operator==(const ArrayView& other) const {
   if (m_strides != other.m_strides) return false;
   if (m_data == other.m_data) return true;
   for (size_t i = 0; i < m_size; ++i) {
-    if (m_data[i] != other.m_data[i]) return false;
+    if ((*this)[i] != other[i]) return false;
   }
   return true;
 }
