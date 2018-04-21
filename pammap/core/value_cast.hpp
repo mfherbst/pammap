@@ -44,8 +44,9 @@ template <typename ValueType>
 ValueType value_cast(const std::string& key, const PamMapValue& operand) {
   try {
     return any_cast<ValueType>(operand);
-  } catch (bad_any_cast& e) {
+  } catch (const bad_any_cast& e) {
     detail::throw_value_cast_type_error(key, operand, typeid(ValueType));
+    throw;
   }
 }
 
@@ -53,8 +54,9 @@ template <typename ValueType>
 ValueType value_cast(const std::string& key, PamMapValue& operand) {
   try {
     return any_cast<ValueType>(operand);
-  } catch (bad_any_cast& e) {
+  } catch (const bad_any_cast& e) {
     detail::throw_value_cast_type_error(key, operand, typeid(ValueType));
+    throw;
   }
 }
 
@@ -62,8 +64,9 @@ template <typename ValueType>
 ValueType value_cast(const std::string& key, PamMapValue&& operand) {
   try {
     return any_cast<ValueType>(operand);
-  } catch (bad_any_cast& e) {
+  } catch (const bad_any_cast& e) {
     detail::throw_value_cast_type_error(key, operand, typeid(ValueType));
+    throw;
   }
 }
 //@}
