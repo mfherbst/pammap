@@ -20,6 +20,7 @@
 #pragma once
 #include "Slice.hpp"
 #include "exceptions.hpp"
+#include <cstddef>
 #include <string>
 #include <type_traits>
 #include <vector>

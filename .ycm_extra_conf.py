@@ -53,6 +53,7 @@ def BuildBaseFlags():
     '-Wcast-align',
     '-Wconversion',
     '-Wsign-conversion',
+    '-Wunused-parameter',
     '-pedantic',
     '-Werror',
     # Generate unwind information

@@ -1,4 +1,5 @@
 # pammap
+[![Build Status](https://travis-ci.org/mfherbst/pammap.svg?branch=master)](https://travis-ci.org/mfherbst/pammap)
 
 Tree-like parameter map for automatically passing parameters from
 high-level to low-level conveniently.
