@@ -19,28 +19,8 @@
 ##
 ## ---------------------------------------------------------------------
 
-# C++ sourle files in the repository
-set(PAMMAP_SOURCES
-	Slice.cpp
-	ArrayView.cpp
-	PamMap.cpp
-	PamMapError.cpp
-	PamMapValue.cpp
-	demangle.cpp
-	exceptions.cpp
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Werror -Wextra \
+-pedantic -Wnon-virtual-dtor -Woverloaded-virtual -Wold-style-cast -Wcast-align \
+-Wconversion -Wsign-conversion"
 )
 
-# Drop the current configuration
-configure_file("config.hpp.in" "config.hpp")
-
-# Build the C++ library
-add_library(pammap_core ${PAMMAP_SOURCES})
-set_target_properties(pammap_core PROPERTIES VERSION "${PROJECT_VERSION}")
-target_include_directories(pammap_core PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-
-# TODO Install binaries
-
-# Pass on to building the tests
-if (PAMMAP_ENABLE_TESTS)
-	add_subdirectory(tests)
-endif()

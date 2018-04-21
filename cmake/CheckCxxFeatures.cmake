@@ -19,28 +19,28 @@
 ##
 ## ---------------------------------------------------------------------
 
-# C++ sourle files in the repository
-set(PAMMAP_SOURCES
-	Slice.cpp
-	ArrayView.cpp
-	PamMap.cpp
-	PamMapError.cpp
-	PamMapValue.cpp
-	demangle.cpp
-	exceptions.cpp
+include(CheckCXXSourceCompiles)
+set(ORIGINAL_FLAGS "${CMAKE_REQUIRED_FLAGS}")
+
+#
+# --------------------------------------------------------------------
+#
+
+set(CMAKE_REQUIRED_FLAGS "-std=c++17 ${ORIGINAL_FLAGS}")
+CHECK_CXX_SOURCE_COMPILES(
+	"#include <any>
+
+	int main() {
+		int i = 0;
+		std::any var = i;
+		return std::any_cast<int>(var);
+	}"
+	HAVE_CXX17_ANY
 )
 
-# Drop the current configuration
-configure_file("config.hpp.in" "config.hpp")
+#
+# --------------------------------------------------------------------
+#
 
-# Build the C++ library
-add_library(pammap_core ${PAMMAP_SOURCES})
-set_target_properties(pammap_core PROPERTIES VERSION "${PROJECT_VERSION}")
-target_include_directories(pammap_core PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-
-# TODO Install binaries
-
-# Pass on to building the tests
-if (PAMMAP_ENABLE_TESTS)
-	add_subdirectory(tests)
-endif()
+set(CMAKE_REQUIRED_FLAGS "${ORIGINAL_FLAGS}")
+unset(ORIGINAL_FLAGS)

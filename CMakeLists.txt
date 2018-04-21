@@ -32,25 +32,31 @@ if (NOT BUILD_SHARED_LIBS)
 	set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()
 
+#
 ##########################################################################
 # Project setup
 
 project(pammap VERSION 0.0.0)
 message("\n# Configuring ${PROJECT_NAME}\n#")
 
-##########################################################################
-# Setup hard and optional dependencies and find components
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Werror -Wextra \
--pedantic -Wnon-virtual-dtor -Woverloaded-virtual -Wold-style-cast -Wcast-align \
--Wconversion -Wsign-conversion"
-)
-
 # Export compile commands if cmake supports it.
 if (CMAKE_VERSION VERSION_GREATER 3.5.0)
 	set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 endif()
 
+#
+##########################################################################
+# Find dependencies
+
+include(cmake/SetupCompiler.cmake)
+include(cmake/CheckCxxFeatures.cmake)
+include(cmake/CheckCxxAbi.cmake)
+
+if (NOT HAVE_CXX_ABI)
+	message(FATAL_ERROR "C++ ABI header is required.")
+endif()
+
+#
 ##########################################################################
 # Testing setup
 
@@ -69,6 +75,7 @@ if(PAMMAP_ENABLE_TESTS)
 	enable_testing()
 endif()
 
+#
 ##########################################################################
 # Pass on to subdirectories
 
@@ -79,7 +86,7 @@ if(PAMMAP_BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
 
-
+#
 ##########################################################################
 # Finish off
 message("#\n# Configuring ${PROJECT_NAME} done\n")

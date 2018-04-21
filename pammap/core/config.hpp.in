@@ -18,36 +18,24 @@
 //
 
 #pragma once
-#include "config.hpp"
-
-#ifdef HAVE_CXX17_ANY
-#include <any>
+/* clang-format off */
 
 namespace pammap {
-using std::any;
-using std::any_cast;
-using std::bad_any_cast;
+
+//
+// Detail namespace
+//
+namespace detail {
+// Version:
+constexpr int version_major {@PROJECT_VERSION_MAJOR@};
+constexpr int version_minor {@PROJECT_VERSION_MINOR@};
+constexpr int version_patch {@PROJECT_VERSION_PATCH@};
+}  // namespace detail
+
+//
+// Definitions of features
+//
+#cmakedefine HAVE_CXX17_ANY
+
+/* clang-format on */
 }  // namespace pammap
-
-#else
-#error "any is not ready"
-
-namespace pammap {
-class any {
-  void emplace();
-  void reset();
-  void swap();
-  bool has_value();
-  void type();
-};
-
-// TODO helper exception
-class bad_any_cast;
-
-template <typename T>
-T any_cast(const Any& operand) {
-  // TODO extract copy of inner object.
-}
-
-}  // namespace pammap
-#endif  // HAVE_CXX17_ANY
