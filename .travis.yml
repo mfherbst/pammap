@@ -23,10 +23,10 @@ language: cpp
 sudo: false
 
 branches:
-  except:
-    - dev
-    - /^dev-.*$/
-    - /^dev_.*$/
+  only:
+    # Only build master and version tags
+    - master
+    - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
 
 env:
   global:
