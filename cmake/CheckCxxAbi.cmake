@@ -19,28 +19,19 @@
 ##
 ## ---------------------------------------------------------------------
 
-# C++ sourle files in the repository
-set(PAMMAP_SOURCES
-	Slice.cpp
-	ArrayView.cpp
-	PamMap.cpp
-	PamMapError.cpp
-	PamMapValue.cpp
-	demangle.cpp
-	exceptions.cpp
+include(CheckCXXSourceCompiles)
+
+CHECK_CXX_SOURCE_COMPILES(
+	"#include <cxxabi.h>
+	#include <string>
+	int main() {
+		const char* mangled = typeid(bool).name();
+		int status;
+		char*  demangled = abi::__cxa_demangle(mangled, nullptr, nullptr, &status);
+		if(status == 0 and \"bool\" == std::string(demangled)) {
+			return 0;
+		}
+		return 1;
+	}"
+	HAVE_CXX_ABI
 )
-
-# Drop the current configuration
-configure_file("config.hpp.in" "config.hpp")
-
-# Build the C++ library
-add_library(pammap_core ${PAMMAP_SOURCES})
-set_target_properties(pammap_core PROPERTIES VERSION "${PROJECT_VERSION}")
-target_include_directories(pammap_core PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
-
-# TODO Install binaries
-
-# Pass on to building the tests
-if (PAMMAP_ENABLE_TESTS)
-	add_subdirectory(tests)
-endif()

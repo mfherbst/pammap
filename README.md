@@ -18,4 +18,10 @@ high-level to low-level conveniently.
 - Idea: Low level code is modified and high-level code adapts automatically.
 
 ## Requirements
-- C++ 17 compiler (for now)
+Pammap is known to build if the following requirements are met.
+Other versions, especially lower could work as well, but have not been tested.
+
+- cmake 3.0
+- C++11 compatible compiler, e.g.
+	- clang 5.0
+	- gcc 5
