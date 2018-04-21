@@ -54,6 +54,16 @@ matrix:
       compiler: clang
       env: CC_COMP="clang-5.0" CXX_COMP="clang++-5.0"
     #
+    # gcc-5 (has c++14)
+    - addons:
+        apt:
+          sources: *def_sources
+          packages:
+            - *def_packages
+            - g++-5
+      compiler: gcc
+      env: CC_COMP="gcc-5" CXX_COMP="g++-5"
+    #
     # gcc-7 (has c++17)
     - addons:
         apt:
