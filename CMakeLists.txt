@@ -37,7 +37,6 @@ endif()
 # Project setup
 
 project(pammap VERSION 0.0.0)
-message("\n# Configuring ${PROJECT_NAME}\n#")
 
 # Export compile commands if cmake supports it.
 if (CMAKE_VERSION VERSION_GREATER 3.5.0)
@@ -85,8 +84,3 @@ option(PAMMAP_BUILD_EXAMPLES "Enable building pammap examples" ON)
 if(PAMMAP_BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
-
-#
-##########################################################################
-# Finish off
-message("#\n# Configuring ${PROJECT_NAME} done\n")

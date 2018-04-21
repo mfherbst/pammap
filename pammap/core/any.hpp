@@ -30,12 +30,14 @@ using std::bad_any_cast;
 }  // namespace pammap
 
 #else
+
 //
 // This part of the implementation is taken from libint2 by
 // Ed Valeev with minor modifications. The original file can be found at
 // https://github.com/evaleev/libint/blob/v2.4.2/include/libint2/util/any.h
 // and was released under the terms of the LGPL 3.
 //
+#include <memory>
 #include <string>
 #include <type_traits>
 #include <typeinfo>
@@ -44,11 +46,11 @@ using std::bad_any_cast;
 namespace pammap {
 
 namespace detail {
-// true if decayed T is Base, or is derived from it
+/** True if decayed T is Base, or is derived from it */
 template <typename Base, typename T>
 using disable_if_same_or_derived = typename std::enable_if<
       !std::is_base_of<Base, typename std::decay<T>::type>::value>::type;
-};  // namespace detail
+}  // namespace detail
 
 /** A partial C++17 std::any implementation (and less efficient than can be) */
 class any {
