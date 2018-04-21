@@ -34,7 +34,6 @@ def generate():
     output += [
         "",
         "// Typedefs mapping the dtype names to their underlying C++ types",
-        ""
     ]
 
     output += NAMESPACE_OPEN

@@ -22,54 +22,53 @@
 // IsSupportedType.hxx.generate.py
 // Instead edit the script and rerun it.
 //
-#include <type_traits>
 #include "typedefs.hxx"
+#include <type_traits>
 
 namespace pammap {
 
 /** Is the type T supported by pammap for storage. */
-template<typename T>
+template <typename T>
 struct IsSupportedType : public std::false_type {};
 
 /** Specialisation of IsSupportedType<T> for Integer.*/
-template<>
+template <>
 struct IsSupportedType<Integer> : public std::true_type {};
 
 /** Specialisation of IsSupportedType<T> for Float.*/
-template<>
+template <>
 struct IsSupportedType<Float> : public std::true_type {};
 
 /** Specialisation of IsSupportedType<T> for Complex.*/
-template<>
+template <>
 struct IsSupportedType<Complex> : public std::true_type {};
 
 /** Specialisation of IsSupportedType<T> for String.*/
-template<>
+template <>
 struct IsSupportedType<String> : public std::true_type {};
 
 /** Specialisation of IsSupportedType<T> for Bool.*/
-template<>
+template <>
 struct IsSupportedType<Bool> : public std::true_type {};
 
 /** Specialisation of IsSupportedType<T> for ArrayView<Integer>.*/
-template<>
+template <>
 struct IsSupportedType<ArrayView<Integer>> : public std::true_type {};
 
 /** Specialisation of IsSupportedType<T> for ArrayView<Float>.*/
-template<>
+template <>
 struct IsSupportedType<ArrayView<Float>> : public std::true_type {};
 
 /** Specialisation of IsSupportedType<T> for ArrayView<Complex>.*/
-template<>
+template <>
 struct IsSupportedType<ArrayView<Complex>> : public std::true_type {};
 
 /** Specialisation of IsSupportedType<T> for ArrayView<String>.*/
-template<>
+template <>
 struct IsSupportedType<ArrayView<String>> : public std::true_type {};
 
 /** Specialisation of IsSupportedType<T> for ArrayView<Bool>.*/
-template<>
+template <>
 struct IsSupportedType<ArrayView<Bool>> : public std::true_type {};
 
-
-} // namespace pammap
+}  // namespace pammap

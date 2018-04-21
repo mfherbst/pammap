@@ -24,11 +24,10 @@
 //
 #pragma once
 #include <complex>
-#include <string>
 #include <cstdint>
+#include <string>
 
 // Typedefs mapping the dtype names to their underlying C++ types
-
 
 namespace pammap {
 
@@ -38,4 +37,4 @@ typedef double Float;
 typedef std::string String;
 typedef bool Bool;
 
-} // namespace pammap
+}  // namespace pammap

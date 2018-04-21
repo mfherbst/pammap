@@ -35,7 +35,7 @@ class cpp:
     """Constants for C++"""
 
     # Headers which are needed for representing the dtypes
-    headers = ["<complex>", "<string>", "<cstdint>"]
+    headers = ["<complex>", "<cstdint>", "<string>"]
 
     # How the conceptual dtypes are represented on C++
     underlying_type = {
