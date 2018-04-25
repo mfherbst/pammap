@@ -52,7 +52,7 @@ matrix:
             - *def_packages
             - &clang_newest [ libstdc++-7-dev, clang-5.0, libc++-dev, llvm-5.0, clang-tidy-5.0 ]
       compiler: clang
-      env: CC_COMP="clang-5.0" CXX_COMP="clang++-5.0"
+      env: COMPILER="clang-5.0"
     #
     # gcc-5 (has c++14)
     - addons:
@@ -62,7 +62,7 @@ matrix:
             - *def_packages
             - g++-5
       compiler: gcc
-      env: CC_COMP="gcc-5" CXX_COMP="g++-5"
+      env: COMPILER="gcc-5"
     #
     # gcc-7 (has c++17)
     - addons:
@@ -72,16 +72,16 @@ matrix:
             - *def_packages
             - g++-7
       compiler: gcc
-      env: CC_COMP="gcc-7" CXX_COMP="g++-7"
+      env: COMPILER="gcc-7"
+    #
+    # Clang tidy
+    - addons:
+        apt:
+          sources: *def_sources
+          packages:
+            - *def_packages
+            - *clang_newest
+      compiler: clang
+      env: JOB=code_style
 
-script:
-  - cmake --version
-  - ninja --version
-  #
-  # Configure and build.
-  - mkdir ${TRAVIS_BUILD_DIR}/build && cd ${TRAVIS_BUILD_DIR}/build
-  - cmake -DCMAKE_CXX_COMPILER=${CXX_COMP} -DCMAKE_C_COMPILER=${CC_COMP}
-           -DPAMMAP_BUILD_EXAMPLES=OFF
-           -DPAMMAP_ENABLE_TESTS=ON ..
-  - cmake --build  . --target all -- -j ${CORES}
-  - ./pammap/core/tests/test_pammap_core
+script: ci/build.sh
