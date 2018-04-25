@@ -18,9 +18,10 @@ find_run_clang_tidy() {
 }
 
 # --------------------------------------------------------------
-
+# Versions
 clang-tidy --version
 find_run_clang_tidy
+clang-format --version
 
 # --------------------------------------------------------------
 # Initialise build directory
@@ -35,3 +36,16 @@ popd
 # Run clang-tidy
 ./scripts/run-clang-tidy.py -run-clang-tidy "$(find_run_clang_tidy)" \
 	-j ${CORES:-1} -check-output
+
+# --------------------------------------------------------------
+# Run clang-format on all files of the repo
+./scripts/run-clang-format.py
+
+# Check if one file has changed
+if [ "$(git status --untracked-files=no --porcelain=v2 | wc -l)" -gt 0 ]; then
+	echo "Formatting has changed the following files:"
+	git status -s --untracked-files=no
+	exit 1
+fi
+
+exit 0

@@ -44,7 +44,7 @@ def main():
 
     commandline = [args.clang_format, "-style=file", "-i"]
     for cfile in cpp_files:
-        subprocess.run(commandline + [cfile])
+        subprocess.check_call(commandline + [cfile])
 
 
 if __name__ == "__main__":
