@@ -52,7 +52,7 @@ matrix:
             - *def_packages
             - &clang_newest [ libstdc++-7-dev, clang-5.0, libc++-dev, llvm-5.0, clang-tidy-5.0 ]
       compiler: clang
-      env: COMPILER="clang-5.0"
+      env: COMPILER="clang-5.0"  # SANITISE=address  TODO Fails for weird reasons
     #
     # gcc-5 (has c++14)
     - addons:

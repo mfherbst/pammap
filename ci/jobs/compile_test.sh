@@ -1,6 +1,7 @@
 #!/bin/bash -ex
 
 set_compilers() {
+	local COMPILER="$1"
 	local COMPNAME=$(echo "${COMPILER}" | cut -d- -f1)
 	local COMPVER=$(echo "${COMPILER}" | cut -d- -f2)
 
@@ -16,19 +17,52 @@ set_compilers() {
 	esac
 }
 
+set_santise_flags() {
+	local SANITISE="$1"
+	local SANITISE_FLAGS="-O1 -g -fno-omit-frame-pointer -fno-optimize-sibling-calls"
+
+	[ -z "$SANITISE" ] && return
+
+	case "$SANITISE" in
+		memory)
+			echo "Enabled memory santisier."
+			local SANITISE_FLAGS="$SANITISE_FLAGS -fsanitize=memory -fsanitize-memory-track-origin"
+			export ASAN_OPTIONS="symbolize=1"
+			;;
+		thread)
+			echo "Enabled thread santisier."
+			local SANITISE_FLAGS="$SANITISE_FLAGS -fsanitize=thread"
+			;;
+		address)
+			echo "Enabled address santisier."
+			local SANITISE_FLAGS="$SANITISE_FLAGS -fsanitize=address"
+			export LSAN_OPTIONS=verbosity=1:log_threads=1
+			;;
+		undefined)
+			echo "Enabled undifined behaviour sanitiser."
+			local SANITISE_FLAGS="$SANITISE_FLAGS -fsanitize=undefined"
+			;;
+	esac
+	export CXX_FLAGS="$CXX_FLAGS $SANITISE_FLAGS"
+}
+
 # --------------------------------------------------------------
 
 set_compilers "${COMPILER}"
+set_santise_flags "$SANITISE"
 
 cmake --version
 ninja --version
 ${CC} --version
 ${CXX} --version
 
+echo "$CXX_FLAGS"
+
 # --------------------------------------------------------------
 # Build
 mkdir build && cd build
 cmake -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_C_COMPILER=${CC} \
+	-DCMAKE_CXX_FLAGS="${CXX_FLAGS}" \
 	-DPAMMAP_BUILD_EXAMPLES=OFF \
 	-DPAMMAP_ENABLE_TESTS=ON ..
 cmake --build  . --target all -- -j ${CORES:-1}
