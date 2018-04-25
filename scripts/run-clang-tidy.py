@@ -93,7 +93,7 @@ def main():
     if args.check_output:
         run_check_output(commandline)
     else:
-        subprocess.run(commandline)
+        subprocess.check_call(commandline)
 
 
 if __name__ == "__main__":

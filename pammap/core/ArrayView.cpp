@@ -86,14 +86,44 @@ bool ArrayView<T>::operator==(const ArrayView& other) const {
 }
 
 template <typename T>
-ArrayView<T> ArrayView<T>::slice_view(std::initializer_list<Slice> /*idcs*/) const {
-  // Check that number of slices in initialiser list fits number of dimensions
+ArrayView<T> ArrayView<T>::slice_view(std::initializer_list<Slice> idcs) const {
+  pammap_throw(false, NotImplementedError, "the slice() functions have not been tested.");
 
-  // Compute new data pointer
-  // Compute new strides
-  // Compute new shapes
+  pammap_throw(idcs.size() == m_shape.size(), IndexError,
+               "Number of slice objects provided to 'slice()' does not agree with number "
+               "of dimensions of ArrayView.");
+  const size_t ndim = m_shape.size();
 
-  pammap_throw(false, NotImplementedError, "slice_view not implemented");
+#ifndef NDEBUG
+  pammap_assert(m_shape.size() == m_strides.size());
+#endif  // NDEBUG
+
+  // The containers to form the new array
+  T* data(m_data);
+  std::vector<size_t> shape(ndim);
+  std::vector<ptrdiff_t> strides(ndim);
+
+  // Go through all slides and adjust shape and strides
+  size_t d = 0;
+  for (const auto& sl : idcs) {
+    // obtain begin end and stride indices using the shape along
+    // current dimension
+    ptrdiff_t begin, end, stride;
+    std::tie(begin, end, stride) = sl.indices(m_shape[d]);
+
+    strides[d] = stride;
+    data += begin * m_strides[d];
+    const ptrdiff_t shd = (end - begin) / stride;
+#ifndef NDEBUG
+    pammap_assert(shd > 0);
+    pammap_assert(static_cast<size_t>(shd) <= m_shape[d]);
+#endif  // NDEBUG
+    shape[d] = static_cast<size_t>(shd);
+
+    ++d;
+  }
+
+  return ArrayView(data, std::move(shape), std::move(strides));
 }
 
 }  // namespace pammap
