@@ -23,7 +23,7 @@
 
 namespace pammap {
 
-TEST_CASE("Slice tests", "[slice]") {
+TEST_CASE("Slice", "[slice]") {
   using idcs_t = std::tuple<ptrdiff_t, ptrdiff_t, ptrdiff_t>;
 
   SECTION("Test basic constructors.") {

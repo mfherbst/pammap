@@ -19,18 +19,8 @@
 ##
 ## ---------------------------------------------------------------------
 
-# Module to setup catch test targets
-include(${CATCH_DIR}/ParseAndAddCatchTests.cmake)
+# Setup catch as target
+set(CATCH_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE INTERNAL "")
 
-# To find the headers of the core library
-include_directories(..)
-
-add_executable(test_pammap_core
-	test.cpp
-	SliceTests.cpp
-	ArrayViewTests.cpp
-	PamMapTests.cpp
-	main.cpp
-)
-target_link_libraries(test_pammap_core pammap_core Catch)
-ParseAndAddCatchTests(test_pammap_core)
+add_library(Catch INTERFACE)
+target_include_directories(Catch INTERFACE "${CATCH_DIR}/..")

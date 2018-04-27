@@ -57,26 +57,13 @@ endif()
 
 #
 ##########################################################################
-# Testing setup
+# Pass on to subdirectories
 
 option(PAMMAP_ENABLE_TESTS "Enable testing of pammap" ON)
 if(PAMMAP_ENABLE_TESTS)
-	# Download catch and setup as imported target
-	file(DOWNLOAD
-		https://github.com/catchorg/Catch2/releases/download/v2.2.0/catch.hpp
-		${pammap_BINARY_DIR}/catch2/catch.hpp
-		EXPECTED_HASH
-		SHA256=f92b29606d21ebd90a52f16d0cf963cef49fa984b2fdea7091b33545af44eeea
-	)
-	add_library(Catch INTERFACE)
-	target_include_directories(Catch INTERFACE ${pammap_BINARY_DIR})
-
+	add_subdirectory(external/catch2)
 	enable_testing()
 endif()
-
-#
-##########################################################################
-# Pass on to subdirectories
 
 add_subdirectory(pammap)
 
