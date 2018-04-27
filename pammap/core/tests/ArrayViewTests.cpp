@@ -25,7 +25,7 @@
 namespace pammap {
 namespace tests {
 
-TEST_CASE("ArrayView tests", "[array]") {
+TEST_CASE("ArrayView", "[array]") {
   using value_type = double;
 
   std::vector<value_type> data(1000);

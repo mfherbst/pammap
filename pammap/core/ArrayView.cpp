@@ -112,7 +112,7 @@ ArrayView<T> ArrayView<T>::slice_view(std::initializer_list<Slice> idcs) const {
     std::tie(begin, end, stride) = sl.indices(m_shape[d]);
 
     strides[d] = stride;
-    data += begin * m_strides[d];
+    data += begin * m_strides[d];  // NOLINT  Pointer arithmetic required
     const ptrdiff_t shd = (end - begin) / stride;
 #ifndef NDEBUG
     pammap_assert(shd > 0);

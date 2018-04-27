@@ -23,8 +23,17 @@
 
 import argparse
 import common
+import glob
 import os
 import subprocess
+
+
+def read_ignored_files():
+    ignore_file = os.path.join(common.get_repo_root_path(), ".clang-format.ignore")
+    if not os.path.isfile(ignore_file):
+        return []
+    with open(ignore_file) as ignf:
+        return [line.strip() for line in ignf if not line.startswith("#")]
 
 
 def main():
@@ -40,6 +49,12 @@ def main():
     cpp_files = [
         os.path.join(root, file) for file in common.list_committed_files()
         if os.path.splitext(file)[1] in cpp_extensions
+    ]
+    ignore_globs = common.read_ignore_globs(".clang-format.ignore")
+    cpp_files = [
+        os.path.join(root, name) for name in common.list_committed_files()
+        if os.path.splitext(name)[1] in cpp_extensions and
+        not any(glob.fnmatch.fnmatch(name, ignore) for ignore in ignore_globs)
     ]
 
     commandline = [args.clang_format, "-style=file", "-i"]

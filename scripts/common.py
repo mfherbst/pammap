@@ -21,6 +21,7 @@
 ##
 ## ---------------------------------------------------------------------
 
+import os
 import subprocess
 
 
@@ -35,3 +36,19 @@ def list_committed_files():
 def get_repo_root_path():
     return subprocess.check_output("git rev-parse --show-toplevel".split(" "),
                                    universal_newlines=True).strip()
+
+
+def read_ignore_globs(ignore_file):
+    """
+    Read a file, given relative to the root of the repo
+    and return the list of globs of files to be ignored.
+
+    If the file does not exist, returns an empty list.
+    """
+    if not os.path.isabs(ignore_file):
+        ignore_file = os.path.join(get_repo_root_path(), ignore_file)
+
+    if not os.path.isfile(ignore_file):
+        return []
+    with open(ignore_file) as ignf:
+        return [line.strip() for line in ignf if not line.startswith("#")]

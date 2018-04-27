@@ -25,7 +25,7 @@
 namespace pammap {
 namespace tests {
 
-TEST_CASE("PamMap tests", "[pammap]") {
+TEST_CASE("PamMap", "[pammap]") {
   // Some data:
   Integer i = 5;
   String s{"test"};

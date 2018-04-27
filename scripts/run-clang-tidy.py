@@ -23,18 +23,10 @@
 
 import argparse
 import common
+import glob
 import os
 import subprocess
 import sys
-
-
-def read_ignored_files():
-    ignore_file = os.path.join(common.get_repo_root_path(), ".clang-tidy.ignore")
-    if not os.path.isfile(ignore_file):
-        return []
-    with open(ignore_file) as ignf:
-        return [line.strip() for line in ignf
-                if not line.startswith("#")]
 
 
 def run_check_output(commandline):
@@ -75,11 +67,12 @@ def main():
     args = parser.parse_args()
 
     cpp_extensions = [".cpp", ".hpp", ".cxx", ".hxx", ".hh", ".cc", ".h", ".c"]
-    ignored_files = read_ignored_files()
-    cpp_files = [file for file in common.list_committed_files()
-                 if os.path.splitext(file)[1] in cpp_extensions and
-                 file not in ignored_files
-                 ]
+    ignore_globs = common.read_ignore_globs(".clang-tidy.ignore")
+    cpp_files = [
+        name for name in common.list_committed_files()
+        if os.path.splitext(name)[1] in cpp_extensions and
+        not any(glob.fnmatch.fnmatch(name, ignore) for ignore in ignore_globs)
+    ]
 
     commandline = [args.run_clang_tidy, "-p", args.p, "-clang-tidy", args.clang_tidy]
     if args.j:
