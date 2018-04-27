@@ -2,3 +2,4 @@
 # here using the relative path from the root of the
 # git repository.
 examples/minimal/testmodule.cpp
+external/catch2/catch.hpp
