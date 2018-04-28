@@ -68,4 +68,4 @@ cmake -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_C_COMPILER=${CC} \
 cmake --build  . --target all -- -j ${CORES:-1}
 
 # Test
-./pammap/core/tests/test_pammap_core
+ctest --output-on-failure -j ${CORES:-1}
