@@ -37,7 +37,35 @@ add_library(pammap_core ${PAMMAP_SOURCES})
 set_target_properties(pammap_core PROPERTIES VERSION "${PROJECT_VERSION}")
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-# TODO Install binaries
+#
+# install files and target specifications
+#
+install(TARGETS pammap_core
+	EXPORT PammapCoreTargets
+	DESTINATION lib
+)
+install(DIRECTORY .
+	DESTINATION "include/pammap"
+	FILES_MATCHING
+	PATTERN "tests" EXCLUDE
+	PATTERN "pammap" EXCLUDE
+	PATTERN "__pycache__" EXCLUDE
+	PATTERN "*.instantiation.h??" EXCLUDE
+	PATTERN "*.hpp" PATTERN "*.hxx"
+)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/config.hpp"
+	DESTINATION "include/pammap"
+)
+
+export(EXPORT PammapCoreTargets
+	FILE "${pammap_BINARY_DIR}/PammapCoreTargets.cmake"
+	NAMESPACE Upstream::
+)
+install(EXPORT PammapCoreTargets
+	FILE "PammapCoreTargets.cmake"
+	NAMESPACE Upstream::
+	DESTINATION "share/cmake/pammap"
+)
 
 #
 # Testing

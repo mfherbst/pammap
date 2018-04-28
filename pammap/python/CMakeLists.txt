@@ -27,6 +27,26 @@ file(DOWNLOAD https://raw.githubusercontent.com/numpy/numpy/v1.13.1/tools/swig/n
 )
 
 #
+# Install interface and cmake files
+#
+install(DIRECTORY .
+	DESTINATION share/cmake
+	FILES_MATCHING
+	PATTERN "tests" EXCLUDE
+	PATTERN "pammap" EXCLUDE
+	PATTERN "__pycache__" EXCLUDE
+	PATTERN "*.cmake"
+)
+install(DIRECTORY .
+	DESTINATION share/pammap
+	FILES_MATCHING
+	PATTERN "tests" EXCLUDE
+	PATTERN "pammap" EXCLUDE
+	PATTERN "__pycache__" EXCLUDE
+	PATTERN "*.i"
+)
+
+#
 # Testing
 #
 if (PAMMAP_ENABLE_TESTS)
