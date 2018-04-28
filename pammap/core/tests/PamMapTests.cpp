@@ -32,7 +32,7 @@ TEST_CASE("PamMap", "[pammap]") {
   Float f = 7.5;
 
   // Some vectors to point into
-  std::vector<Float> fvec{1., 2., 3., 4.};
+  std::vector<Float> fvec{1., 2., 3., f};
   std::vector<Integer> ivec{1, 2, 3, 4};
   ArrayView<Float> farr(fvec);
   ArrayView<Integer> iarr(ivec);
@@ -432,12 +432,15 @@ TEST_CASE("PamMap", "[pammap]") {
     // Iterator over empty range:
     for (auto& kv : m.submap("blubba")) {
       REQUIRE(false);  // We should never get here, since range empty
+      (void)kv;        // Fake-use variable
     }
     for (auto it = m.begin("blubba"); it != m.end("blubba"); ++it) {
       REQUIRE(false);  // We should never get here, since range empty
+      (void)it;        // Fake-use variable
     }
     for (auto it = m.cbegin("blubba"); it != m.cend("blubba"); ++it) {
       REQUIRE(false);  // We should never get here, since range empty
+      (void)it;        // Fake-use variable
     }
   }
 
