@@ -72,14 +72,17 @@ function(pammap_python_add_module MODULE_NAME)
 
 	set_source_files_properties(${MODULE_NAME}.i PROPERTIES CPLUSPLUS ON)
 	swig_add_library(${MODULE_NAME} LANGUAGE python SOURCES ${MODULE_NAME}.i ${PAPM_SOURCES})
-	
+
+	SET(SWIG_CXX_FLAGS
+		"-Wno-error -Wno-sign-conversion -Wno-conversion \
+		-Wno-missing-field-initializers -Wno-pedantic -Wno-old-style-cast \
+		-Wno-sign-compare -Wno-maybe-uninitialized -Wno-deprecated -Wno-error \
+		-Wno-register -Wno-useless-cast -Wno-duplicated-cond"
+	)
 	set_source_files_properties(
 		${swig_generated_file_fullname}
 		PROPERTIES
-		COMPILE_FLAGS
-		"-Wno-sign-conversion -Wno-conversion -Wno-missing-field-initializers -Wno-pedantic -Wno-old-style-cast \
--Wno-sign-compare -Wno-maybe-uninitialized -Wno-deprecated -Wno-error -Wno-register"
-		# TODO Do not hardcode
+		COMPILE_FLAGS "${SWIG_CXX_FLAGS}"
 	)
 	target_include_directories(
 		${SWIG_MODULE_${MODULE_NAME}_REAL_NAME}

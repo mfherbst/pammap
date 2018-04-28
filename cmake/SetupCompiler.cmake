@@ -19,8 +19,13 @@
 ##
 ## ---------------------------------------------------------------------
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Werror -Wextra \
--pedantic -Wnon-virtual-dtor -Woverloaded-virtual -Wold-style-cast -Wcast-align \
--Wconversion -Wsign-conversion"
-)
+# Standard flags
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror \
+-Wall -Wextra -Wnon-virtual-dtor -pedantic \
+-Woverloaded-virtual -Wold-style-cast -Wcast-align \
+-Wconversion -Wsign-conversion -Wno-unused-variable -Wmisleading-indentation \
+-Wduplicated-cond -Wduplicated-branches -Wlogical-op -Wnull-dereference \
+-Wuseless-cast -Wdouble-promotion -Wformat=2 \
+-Wno-unknown-warning-option \
+")
 

@@ -26,7 +26,7 @@ set(ORIGINAL_FLAGS "${CMAKE_REQUIRED_FLAGS}")
 # --------------------------------------------------------------------
 #
 
-set(CMAKE_REQUIRED_FLAGS "-std=c++17 ${ORIGINAL_FLAGS}")
+set(CMAKE_REQUIRED_FLAGS "-std=c++17")
 CHECK_CXX_SOURCE_COMPILES(
 	"#include <any>
 
@@ -44,3 +44,10 @@ CHECK_CXX_SOURCE_COMPILES(
 
 set(CMAKE_REQUIRED_FLAGS "${ORIGINAL_FLAGS}")
 unset(ORIGINAL_FLAGS)
+
+#
+# Adjust CMAKE_CXX_FLAGS
+#
+if (HAVE_CXX17_ANY)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+endif()

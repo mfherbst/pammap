@@ -31,7 +31,7 @@ def generate():
 
     output += NAMESPACE_OPEN
     for dtype in constants.DTYPES:
-        output.append("template class ArrayView<{0:}>;".format(to_cpp_type(dtype)))
+        output.append("template struct ArrayView<{0:}>;".format(to_cpp_type(dtype)))
     output += NAMESPACE_CLOSE
     return "\n".join(output)
 

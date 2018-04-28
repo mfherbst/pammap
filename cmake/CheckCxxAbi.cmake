@@ -20,7 +20,6 @@
 ## ---------------------------------------------------------------------
 
 include(CheckCXXSourceCompiles)
-
 CHECK_CXX_SOURCE_COMPILES(
 	"#include <cxxabi.h>
 	#include <string>
