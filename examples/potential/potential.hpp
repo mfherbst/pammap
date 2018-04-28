@@ -18,7 +18,7 @@
 //
 
 #pragma once
-#include "pammap.hpp"
+#include <pammap/core.hpp>
 
 namespace potential {
 using pammap::Float;
