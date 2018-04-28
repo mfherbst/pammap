@@ -17,10 +17,35 @@
 // along with pammap. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#pragma once
-#include "ArrayView.hpp"
-#include "PamMap.hpp"
-#include "Slice.hpp"
-#include "any.hpp"
-#include "exceptions.hpp"
-#include "typedefs.hxx"
+#include "swiginterface.hpp"
+#include <iterator>
+
+namespace swiginterface_test {
+
+Integer num_entries(pammap::PamMap map) {
+  Integer i = 0;
+  for (auto it = map.begin(); it != map.end(); ++it) ++i;
+  return i;
+}
+
+Float max_value_float(pammap::ArrayView<Float> array) {
+  if (array.size() == 0) return 0.;
+
+  Float max = array[0];
+  for (size_t i = 0; i < array.size(); ++i) {
+    max = std::max(max, array[i]);
+  }
+  return max;
+}
+
+Integer max_value_integer(pammap::ArrayView<Integer> array) {
+  if (array.size() == 0) return 0;
+
+  Integer max = array[0];
+  for (size_t i = 0; i < array.size(); ++i) {
+    max = std::max(max, array[i]);
+  }
+  return max;
+}
+
+}  // namespace swiginterface_test

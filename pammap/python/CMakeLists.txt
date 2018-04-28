@@ -25,3 +25,10 @@ file(DOWNLOAD https://raw.githubusercontent.com/numpy/numpy/v1.13.1/tools/swig/n
 	EXPECTED_HASH
 	SHA256=bc658c3e9f4ecc5343041339c0697314398fd7cd0e442aa2d424b71086e305ec
 )
+
+#
+# Testing
+#
+if (PAMMAP_ENABLE_TESTS)
+	add_subdirectory(tests)
+endif()

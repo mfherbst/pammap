@@ -19,29 +19,16 @@
 ##
 ## ---------------------------------------------------------------------
 
-#
-# Build
-#
-set(PAMMAP_SOURCES
-	Slice.cpp
-	ArrayView.cpp
-	PamMap.cpp
-	PamMapError.cpp
-	PamMapValue.cpp
-	demangle.cpp
-	exceptions.cpp
+include(../PamMapPython.cmake)
+
+pammap_python_add_module(swiginterface SOURCES swiginterface.cpp HEADERS swiginterface.hpp)
+
+set(PYTHONPATH "${CMAKE_CURRENT_BINARY_DIR}:$ENV{PYTHONPATH}")
+
+add_test(NAME python_interface_tests
+	COMMAND ${PYTHON_EXECUTABLE} -m pytest -v "${CMAKE_CURRENT_LIST_DIR}"
 )
 
-configure_file("config.hpp.in" "config.hpp")
-add_library(pammap_core ${PAMMAP_SOURCES})
-set_target_properties(pammap_core PROPERTIES VERSION "${PROJECT_VERSION}")
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-# TODO Install binaries
-
-#
-# Testing
-#
-if (PAMMAP_ENABLE_TESTS)
-	add_subdirectory(tests)
-endif()
+set_tests_properties(python_interface_tests
+	PROPERTIES ENVIRONMENT "PYTHONPATH=${PYTHONPATH}"
+)

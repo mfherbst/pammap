@@ -18,9 +18,19 @@
 //
 
 #pragma once
-#include "ArrayView.hpp"
-#include "PamMap.hpp"
-#include "Slice.hpp"
-#include "any.hpp"
-#include "exceptions.hpp"
-#include "typedefs.hxx"
+#include "pammap.hpp"
+
+namespace swiginterface_test {
+using pammap::Float;
+using pammap::Integer;
+
+/** Return the number of entries in a PamMap */
+Integer num_entries(pammap::PamMap map);
+
+/** Obtain the largest value of an array */
+Float max_value_float(pammap::ArrayView<Float> array);
+
+/** Obtain the largest value of an array */
+Integer max_value_integer(pammap::ArrayView<Integer> array);
+
+}  // namespace swiginterface_test
