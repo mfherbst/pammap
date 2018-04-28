@@ -34,11 +34,6 @@
 %include "stdint.i"
 %include "typedefs.hxx"
 
-%apply (pammap::ArrayView<pammap::Complex> ARRAYVIEW) {(pammap::ArrayView<pammap::Complex> view)}
-%apply (pammap::ArrayView<pammap::Integer> ARRAYVIEW) {(pammap::ArrayView<pammap::Integer> view)}
-%apply (pammap::ArrayView<pammap::Float> ARRAYVIEW) {(pammap::ArrayView<pammap::Float> view)}
-%apply (pammap::ArrayView<pammap::Bool> ARRAYVIEW) {(pammap::ArrayView<pammap::Bool> view)}
-
 %include "PamMap.hpp"
 %extend pammap::PamMap {
   void update_complex(std::string key, pammap::Complex value) {
@@ -76,32 +71,32 @@
     return $self->at<pammap::Bool>(key);
   }
 
-void update_complex_array(std::string key, pammap::ArrayView<pammap::Complex> view) {
-  $self->update(key, std::move(view));
-}
+  void update_complex_array(std::string key, pammap::ArrayView<pammap::Complex> view) {
+    $self->update(key, std::move(view));
+  }
 
-pammap::ArrayView<pammap::Complex> get_complex_array(std::string key) {
-  return $self->at<pammap::ArrayView<pammap::Complex>>(key);}
+  pammap::ArrayView<pammap::Complex> get_complex_array(std::string key) {
+    return $self->at<pammap::ArrayView<pammap::Complex>>(key);  }
 
-void update_integer_array(std::string key, pammap::ArrayView<pammap::Integer> view) {
-  $self->update(key, std::move(view));
-}
+  void update_integer_array(std::string key, pammap::ArrayView<pammap::Integer> view) {
+    $self->update(key, std::move(view));
+  }
 
-pammap::ArrayView<pammap::Integer> get_integer_array(std::string key) {
-  return $self->at<pammap::ArrayView<pammap::Integer>>(key);}
+  pammap::ArrayView<pammap::Integer> get_integer_array(std::string key) {
+    return $self->at<pammap::ArrayView<pammap::Integer>>(key);  }
 
-void update_float_array(std::string key, pammap::ArrayView<pammap::Float> view) {
-  $self->update(key, std::move(view));
-}
+  void update_float_array(std::string key, pammap::ArrayView<pammap::Float> view) {
+    $self->update(key, std::move(view));
+  }
 
-pammap::ArrayView<pammap::Float> get_float_array(std::string key) {
-  return $self->at<pammap::ArrayView<pammap::Float>>(key);}
+  pammap::ArrayView<pammap::Float> get_float_array(std::string key) {
+    return $self->at<pammap::ArrayView<pammap::Float>>(key);  }
 
-void update_bool_array(std::string key, pammap::ArrayView<pammap::Bool> view) {
-  $self->update(key, std::move(view));
-}
+  void update_bool_array(std::string key, pammap::ArrayView<pammap::Bool> view) {
+    $self->update(key, std::move(view));
+  }
 
-pammap::ArrayView<pammap::Bool> get_bool_array(std::string key) {
-  return $self->at<pammap::ArrayView<pammap::Bool>>(key);}
+  pammap::ArrayView<pammap::Bool> get_bool_array(std::string key) {
+    return $self->at<pammap::ArrayView<pammap::Bool>>(key);  }
 
 }

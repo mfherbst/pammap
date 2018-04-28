@@ -46,6 +46,11 @@ set_santise_flags() {
 	export CXX_FLAGS="$CXX_FLAGS $SANITISE_FLAGS"
 }
 
+configure_debug_exit() {
+	cat CMakeFiles/CMakeError.log
+	exit 1
+}
+
 # --------------------------------------------------------------
 
 set_compilers "${COMPILER}"
@@ -59,13 +64,14 @@ ${CXX} --version
 echo "$CXX_FLAGS"
 
 # --------------------------------------------------------------
-# Build
+# Configure and build
 mkdir build && cd build
 cmake -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_C_COMPILER=${CC} \
 	-DCMAKE_CXX_FLAGS="${CXX_FLAGS}" \
 	-DPAMMAP_BUILD_EXAMPLES=OFF \
-	-DPAMMAP_ENABLE_TESTS=ON ..
+	-DPAMMAP_ENABLE_TESTS=ON .. || configure_debug_exit
+
 cmake --build  . --target all -- -j ${CORES:-1}
 
 # Test
-./pammap/core/tests/test_pammap_core
+ctest --output-on-failure -j ${CORES:-1}

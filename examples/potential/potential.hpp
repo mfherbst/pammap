@@ -18,9 +18,22 @@
 //
 
 #pragma once
-#include "ArrayView.hpp"
-#include "PamMap.hpp"
-#include "Slice.hpp"
-#include "any.hpp"
-#include "exceptions.hpp"
-#include "typedefs.hxx"
+#include "pammap.hpp"
+
+namespace potential {
+using pammap::Float;
+using pammap::PamMap;
+
+struct PotentialState {
+  PotentialState(PamMap p);
+
+#ifndef SWIG
+  pammap::ArrayView<Float> charges;
+  pammap::ArrayView<Float> positions;
+#endif  // SWIG
+};
+
+void compute(const PotentialState& state, pammap::ArrayView<Float> gridpoints,
+             pammap::ArrayView<Float> out_values);
+
+}  // namespace potential

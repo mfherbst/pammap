@@ -40,6 +40,10 @@ addons:
       - llvm-toolchain-trusty-5.0   # clang-5.0
     packages: &def_packages
       - ninja-build
+      #
+      - swig
+      - python3-numpy
+      - python3-pytest
 
 matrix:
   include:

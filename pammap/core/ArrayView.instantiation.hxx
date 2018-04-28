@@ -26,10 +26,10 @@
 
 namespace pammap {
 
-template class ArrayView<Complex>;
-template class ArrayView<Integer>;
-template class ArrayView<Float>;
-template class ArrayView<String>;
-template class ArrayView<Bool>;
+template struct ArrayView<Complex>;
+template struct ArrayView<Integer>;
+template struct ArrayView<Float>;
+template struct ArrayView<String>;
+template struct ArrayView<Bool>;
 
 }  // namespace pammap
