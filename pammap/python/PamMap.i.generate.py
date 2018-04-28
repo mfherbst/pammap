@@ -21,7 +21,7 @@
 ##
 ## ---------------------------------------------------------------------
 
-from common import licence_header_cpp, to_cpp_type, to_cpp_blocktype
+from common import licence_header_cpp, to_cpp_type, to_cpp_arraytype
 import constants
 
 
@@ -43,15 +43,6 @@ def generate():
 
     output += [
         "",
-    ]
-    for dtype in constants.DTYPES:
-        if dtype not in constants.python.underlying_numpy_type:
-            continue
-        dbtype = to_cpp_blocktype(dtype, full=True)
-        output += ["%apply (" + dbtype + " ARRAYVIEW) {(" + dbtype + " view)}"]
-
-    output += [
-        "",
         '%include "PamMap.hpp"',
         "%extend pammap::PamMap {"
     ]
@@ -70,21 +61,21 @@ def generate():
     for dtype in constants.DTYPES:
         if dtype not in constants.python.underlying_numpy_type:
             continue
-        dbtype = to_cpp_blocktype(dtype, full=True)
+        dbtype = to_cpp_arraytype(dtype, full=True)
         # Function to update the value in the PamMap by viewing the data
         output += [
-            "void update_" + dtype + "_array(std::string key, " +
+            "  void update_" + dtype + "_array(std::string key, " +
             dbtype + " view) {",
-            "  $self->update(key, std::move(view));",
-            "}",
+            "    $self->update(key, std::move(view));",
+            "  }",
             ""
         ]
 
         # Function to retrieve the value in the PamMap (as a copy)
         output += [
-            dbtype + " get_" + dtype + "_array(std::string key) {",
-            "  return $self->at<" + dbtype + ">(key);"
-            "}",
+            "  " + dbtype + " get_" + dtype + "_array(std::string key) {",
+            "    return $self->at<" + dbtype + ">(key);"
+            "  }",
             ""
         ]
 

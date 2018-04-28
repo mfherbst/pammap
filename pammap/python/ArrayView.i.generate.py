@@ -21,7 +21,7 @@
 ##
 ## ---------------------------------------------------------------------
 
-from common import to_cpp_blocktype
+from common import to_cpp_arraytype
 import constants
 import os
 
@@ -32,15 +32,23 @@ def generate():
     with open(os.path.join(thisdir, "ArrayView.i.template")) as f:
         original = f.readlines()
 
-    output = [""]
+    output = ["", "//", "// Define typemaps", "//"]
     for dtype in constants.DTYPES:
         if dtype not in constants.python.underlying_numpy_type:
             continue
         nptype = constants.python.underlying_numpy_type[dtype]
         output += [
-            "%arrayview_typemaps(" + to_cpp_blocktype(dtype, full=True) +
+            "%arrayview_typemaps(" + to_cpp_arraytype(dtype, full=True) +
             ", " + nptype + ")"
         ]
+
+    output += ["", "//", "// Apply typemaps", "//"]
+    for dtype in constants.DTYPES:
+        if dtype not in constants.python.underlying_numpy_type:
+            continue
+        dbtype = to_cpp_arraytype(dtype, full=True)
+        output += ["%apply (" + dbtype + " ARRAYVIEW) {(" + dbtype + ")}"]
+
     return "".join(original) + "\n".join(output)
 
 

@@ -108,7 +108,18 @@
 // In the full version the instantiation typemaps will be added here.
 //
 
+//
+// Define typemaps
+//
 %arrayview_typemaps(pammap::ArrayView<pammap::Complex>, NPY_CDOUBLE)
 %arrayview_typemaps(pammap::ArrayView<pammap::Integer>, NPY_LONGLONG)
 %arrayview_typemaps(pammap::ArrayView<pammap::Float>, NPY_DOUBLE)
 %arrayview_typemaps(pammap::ArrayView<pammap::Bool>, NPY_BOOL)
+
+//
+// Apply typemaps
+//
+%apply (pammap::ArrayView<pammap::Complex> ARRAYVIEW) {(pammap::ArrayView<pammap::Complex>)}
+%apply (pammap::ArrayView<pammap::Integer> ARRAYVIEW) {(pammap::ArrayView<pammap::Integer>)}
+%apply (pammap::ArrayView<pammap::Float> ARRAYVIEW) {(pammap::ArrayView<pammap::Float>)}
+%apply (pammap::ArrayView<pammap::Bool> ARRAYVIEW) {(pammap::ArrayView<pammap::Bool>)}

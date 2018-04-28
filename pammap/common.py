@@ -99,7 +99,7 @@ def to_cpp_type(dtype, full=False):
         return dtype[0].upper() + dtype[1:]
 
 
-def to_cpp_blocktype(dtype, full=False):
+def to_cpp_arraytype(dtype, full=False):
     if full:
         return "pammap::ArrayView<" + to_cpp_type(dtype, full=True) + ">"
     else:
