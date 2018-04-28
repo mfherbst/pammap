@@ -17,7 +17,7 @@
 // along with pammap. If not, see <http://www.gnu.org/licenses/>.
 //
 
-#include "pammap.hpp"
+#include "core.hpp"
 #include <catch2/catch.hpp>
 #include <iostream>
 

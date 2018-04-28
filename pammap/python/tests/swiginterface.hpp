@@ -18,7 +18,7 @@
 //
 
 #pragma once
-#include "pammap.hpp"
+#include <pammap/core.hpp>
 
 namespace swiginterface_test {
 using pammap::Float;
