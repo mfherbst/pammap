@@ -78,7 +78,7 @@ function(pammap_python_add_module MODULE_NAME)
 		PROPERTIES
 		COMPILE_FLAGS
 		"-Wno-sign-conversion -Wno-conversion -Wno-missing-field-initializers -Wno-pedantic -Wno-old-style-cast \
--Wno-sign-compare -Wno-maybe-uninitialized -Wno-deprecated -Wno-error"
+-Wno-sign-compare -Wno-maybe-uninitialized -Wno-deprecated -Wno-error -Wno-register"
 		# TODO Do not hardcode
 	)
 	target_include_directories(
