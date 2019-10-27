@@ -5,6 +5,8 @@ set_compilers() {
 	local COMPNAME=$(echo "${COMPILER}" | cut -d- -f1)
 	local COMPVER=$(echo "${COMPILER}" | cut -d- -f2)
 
+	[ -z "$COMPILER" ] && return
+
 	case "$COMPNAME" in
 		clang)
 			export CC="clang-$COMPVER"
@@ -26,7 +28,7 @@ set_santise_flags() {
 	case "$SANITISE" in
 		memory)
 			echo "Enabled memory santisier."
-			local SANITISE_FLAGS="$SANITISE_FLAGS -fsanitize=memory -fsanitize-memory-track-origin"
+			local SANITISE_FLAGS="$SANITISE_FLAGS -fsanitize=memory -fsanitize-memory-track-origins"
 			export ASAN_OPTIONS="symbolize=1"
 			;;
 		thread)
@@ -60,8 +62,7 @@ cmake --version
 ninja --version
 ${CC} --version
 ${CXX} --version
-
-echo "$CXX_FLAGS"
+echo "CXX_FLAGS: $CXX_FLAGS"
 
 # --------------------------------------------------------------
 # Configure and build
@@ -73,5 +74,6 @@ cmake -DCMAKE_CXX_COMPILER=${CXX} -DCMAKE_C_COMPILER=${CC} \
 
 cmake --build  . --target all -- -j ${CORES:-1}
 
-# Test
-ctest --output-on-failure -j ${CORES:-1}
+# Test (ignore python interface on sanitise runs)
+[ "$SANITISE" ] && CTEST_EXTRA="-E python_interface_tests" || true
+ctest --output-on-failure -j ${CORES:-1} $CTEST_EXTRA
