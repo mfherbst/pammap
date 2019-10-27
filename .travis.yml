@@ -20,13 +20,14 @@
 ## ---------------------------------------------------------------------
 
 language: cpp
-sudo: false
-
 branches:
   only:
-    # Only build master and version tags
     - master
     - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
+
+compiler:
+  - clang
+  - gcc
 
 env:
   global:
@@ -35,57 +36,32 @@ env:
 
 addons:
   apt:
-    sources: &def_sources
-      - ubuntu-toolchain-r-test     # g++ 7 and newer C++ standard library
-      - llvm-toolchain-trusty-5.0   # clang-5.0
-    packages: &def_packages
+    packages:
       - ninja-build
-      #
       - swig
       - python3-numpy
       - python3-pytest
 
-matrix:
-  include:
-    #
-    # Clang 5.0 (has c++17)
-    - addons:
-        apt:
-          sources: *def_sources
-          packages:
-            - *def_packages
-            - &clang_newest [ libstdc++-7-dev, clang-5.0, libc++-dev, llvm-5.0, clang-tidy-5.0 ]
-      compiler: clang
-      env: COMPILER="clang-5.0"  # SANITISE=address  TODO Fails for weird reasons
-    #
-    # gcc-5 (has c++14)
-    - addons:
-        apt:
-          sources: *def_sources
-          packages:
-            - *def_packages
-            - g++-5
-      compiler: gcc
-      env: COMPILER="gcc-5"
-    #
-    # gcc-7 (has c++17)
-    - addons:
-        apt:
-          sources: *def_sources
-          packages:
-            - *def_packages
-            - g++-7
-      compiler: gcc
-      env: COMPILER="gcc-7"
-    #
-    # Clang tidy
-    - addons:
-        apt:
-          sources: *def_sources
-          packages:
-            - *def_packages
-            - *clang_newest
-      compiler: clang
-      env: JOB=code_style
-
 script: ci/build.sh
+
+# These jobes are only run with the first setup
+# mentioned in the initial list
+jobs:
+  include:
+    - stage: code style  # using clang-7
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-xenial-7
+          packages:
+            - clang-tidy-7
+            - swig
+      env: JOB=code_style
+    - stage: sanitise
+      env: SANITISE=address
+    # - env: SANITISE=memory   # TODO Fails due to catch
+
+stages:
+  - code style
+  - test
+  - sanitise
